@@ -1,102 +1,174 @@
 /**
- * PROMETHEIAX - API REST
- * Capa de Servicios: services/turnos.service.js
+ * ==============================================================================
+ * PROMETHEIAX — API REST POR CAPAS (TALLER EVALUATIVO CIAF)
+ * Archivo: services/turnos.service.js
+ * ==============================================================================
  * 
- * Responsabilidad estricta según rúbrica CIAF:
- * - Contiene toda la lógica de negocio.
- * - Realiza los cálculos matemáticos (regla de negocio parametrizada por N).
- * - Gestiona la lectura y persistencia de datos en data/turnos.json.
+ * ¿QUÉ ES ESTA CAPA Y POR QUÉ ES VITAL?
+ * La capa de Servicios ("Services") es el corazón y cerebro del negocio.
+ * Aquí se concentra toda la lógica operativa, las reglas de cálculo matemático
+ * y la persistencia de datos en disco.
+ * 
+ * Regla de oro de arquitectura limpia:
+ * Los controladores solo atienden peticiones web (HTTP). Los servicios resuelven
+ * el problema real del negocio. Por eso, este archivo NO conoce nada de `req` ni
+ * de `res`, lo que permite que esta lógica pueda reutilizarse en cualquier momento.
+ * 
+ * INTEGRANTES DEL EQUIPO (GRUPO 1 MARTES):
+ * 1. Jordan Rivas, John Edison       -> Puesto oficial de lista CIAF: #10 (N = 10)
+ * 2. Sánchez Rodríguez, Laura Ximena  -> Puesto oficial de lista CIAF: #19
+ * ==============================================================================
  */
 
 const fs = require('fs');
 const path = require('path');
 
+// Ruta absoluta y segura hacia el archivo donde guardamos las solicitudes en disco
 const RUTA_DATOS = path.join(__dirname, '..', 'data', 'turnos.json');
 
 /**
- * Obtiene el parámetro N asignado al equipo.
- * Se lee desde la variable de entorno EQUIPO_N.
- * Por defecto es 7 si no está configurada.
+ * ------------------------------------------------------------------------------
+ * 1. OBTENCIÓN DEL PARÁMETRO N DEL EQUIPO
+ * ------------------------------------------------------------------------------
+ * Regla oficial del taller (Pág. 2 y 3 del PDF):
+ * "Se ordenan alfabéticamente por apellido los integrantes del equipo según el
+ * listado oficial de asistencia. El valor de N corresponde al número de lista
+ * del primer integrante en dicho orden."
  * 
- * Regla CIAF:
- * Se ordenan alfabéticamente por apellido los integrantes del equipo.
- * N = número de lista oficial del primer integrante.
+ * En nuestro equipo:
+ * - Jordan Rivas, John Edison (Letra 'J') -> Casilla oficial #10.
+ * - Sánchez Rodríguez, Laura Ximena (Letra 'S') -> Casilla oficial #19.
+ * 
+ * Como la 'J' va primero en el abecedario, el primer integrante es John Edison
+ * y por lo tanto N = 10.
+ * 
+ * La función lee primero la variable de entorno `EQUIPO_N` del archivo `.env`.
+ * Si por alguna razón no estuviera configurada, usa 10 como valor de respaldo seguro.
+ * 
+ * @returns {number} Valor numérico de N (10 para nuestro equipo).
  */
 function obtenerParametroN() {
-  const nEnv = process.env.EQUIPO_N;
-  const n = parseInt(nEnv, 10);
-  return (!isNaN(n) && n > 0) ? n : 10;
+  const variableEntorno = process.env.EQUIPO_N;
+  const numeroConvertido = parseInt(variableEntorno, 10);
+
+  // Verificamos que sea un número válido y estrictamente mayor que cero
+  if (!isNaN(numeroConvertido) && numeroConvertido > 0) {
+    return numeroConvertido;
+  }
+
+  // Respaldo oficial de nuestro equipo
+  return 10;
 }
 
 /**
- * Lee la lista de turnos desde el archivo JSON de persistencia.
- * Si el archivo no existe, lo inicializa con un arreglo vacío.
+ * ------------------------------------------------------------------------------
+ * 2. LECTURA DEFENSIVA DE DATOS (data/turnos.json)
+ * ------------------------------------------------------------------------------
+ * Lee el archivo JSON local donde están guardadas las solicitudes.
+ * Es defensiva porque si la carpeta o el archivo aún no existen, los crea
+ * automáticamente con un arreglo vacío `[]` para que el servidor nunca colapse.
+ * 
+ * @returns {Array} Lista de solicitudes registradas en memoria.
  */
 function leerDatos() {
   try {
+    // Si el archivo no existe en el disco, lo creamos de una vez
     if (!fs.existsSync(RUTA_DATOS)) {
-      const carpeta = path.dirname(RUTA_DATOS);
-      if (!fs.existsSync(carpeta)) {
-        fs.mkdirSync(carpeta, { recursive: true });
+      const carpetaContenedora = path.dirname(RUTA_DATOS);
+      if (!fs.existsSync(carpetaContenedora)) {
+        fs.mkdirSync(carpetaContenedora, { recursive: true });
       }
       fs.writeFileSync(RUTA_DATOS, JSON.stringify([], null, 2), 'utf-8');
       return [];
     }
-    const contenido = fs.readFileSync(RUTA_DATOS, 'utf-8');
-    if (!contenido.trim()) {
+
+    // Leemos el texto plano del archivo
+    const textoJson = fs.readFileSync(RUTA_DATOS, 'utf-8');
+
+    // Si el archivo estuviera en blanco, retornamos un arreglo vacío
+    if (!textoJson.trim()) {
       return [];
     }
-    return JSON.parse(contenido);
+
+    // Convertimos el texto JSON a un arreglo de objetos JavaScript
+    return JSON.parse(textoJson);
   } catch (error) {
-    console.error('Error al leer data/turnos.json:', error.message);
+    console.error('Error al intentar leer data/turnos.json:', error.message);
+    // En caso de fallo imprevisto, retornamos un arreglo vacío para proteger el sistema
     return [];
   }
 }
 
 /**
- * Escribe la lista de turnos en el archivo JSON de persistencia.
+ * ------------------------------------------------------------------------------
+ * 3. ESCRITURA Y PERSISTENCIA SEGURA (data/turnos.json)
+ * ------------------------------------------------------------------------------
+ * Guarda la lista completa de solicitudes en el archivo local JSON.
+ * Formatea el texto con 2 espacios de indentación para que sea fácilmente legible
+ * por cualquier persona que abra el archivo en VS Code o Bloc de Notas.
+ * 
+ * @param {Array} listaTurnos Arreglo actualizado de solicitudes.
+ * @returns {boolean} True si se guardó correctamente.
  */
-function guardarDatos(turnos) {
+function guardarDatos(listaTurnos) {
   try {
-    const carpeta = path.dirname(RUTA_DATOS);
-    if (!fs.existsSync(carpeta)) {
-      fs.mkdirSync(carpeta, { recursive: true });
+    const carpetaContenedora = path.dirname(RUTA_DATOS);
+    if (!fs.existsSync(carpetaContenedora)) {
+      fs.mkdirSync(carpetaContenedora, { recursive: true });
     }
-    fs.writeFileSync(RUTA_DATOS, JSON.stringify(turnos, null, 2), 'utf-8');
+
+    // Guardamos con indentación de 2 espacios (pretty print)
+    fs.writeFileSync(RUTA_DATOS, JSON.stringify(listaTurnos, null, 2), 'utf-8');
     return true;
   } catch (error) {
-    console.error('Error al guardar en data/turnos.json:', error.message);
+    console.error('Error crítico al escribir en data/turnos.json:', error.message);
     throw new Error('No se pudo guardar la información en el almacenamiento local.');
   }
 }
 
 /**
- * Aplica la regla de negocio N para calcular la tarifa:
- * 
+ * ------------------------------------------------------------------------------
+ * 4. CÁLCULO MATEMÁTICO DE TARIFAS (REGLA OFICIAL DE NEGOCIO CIAF)
+ * ------------------------------------------------------------------------------
+ * Fórmula exigida en el PDF (Página 3):
  * porcentajeRecargo = N * 2%
- * Si prioritario = true:
- *   totalPagar = precioBase + (precioBase * porcentajeRecargo / 100)
- * Si prioritario = false o no especificado:
- *   totalPagar = precioBase
+ * 
+ * Para nuestro equipo (N = 10):
+ * porcentajeRecargo = 10 * 2% = 20%
+ * 
+ * Reglas de aplicación:
+ * - Si prioritario === true:
+ *     recargo = precioBase * 20 / 100
+ *     totalPagar = precioBase + recargo
+ * 
+ * - Si prioritario === false o no se especifica:
+ *     recargo = 0
+ *     totalPagar = precioBase
+ * 
+ * @param {number} precioBase Valor numérico base de la sesión académica.
+ * @param {boolean} esPrioritario Si el estudiante solicitó atención prioritaria.
+ * @returns {Object} Desglose matemático completo con N, porcentajes y total.
  */
 function calcularTarifa(precioBase, esPrioritario) {
   const N = obtenerParametroN();
-  const porcentajeRecargo = N * 2;
+  const porcentajeOficial = N * 2; // Para nosotros: 10 * 2 = 20%
   const precioNumerico = Number(precioBase);
+  const prioridadActiva = Boolean(esPrioritario);
 
-  const prioritario = Boolean(esPrioritario);
-
-  if (prioritario) {
-    const valorRecargo = Math.round((precioNumerico * porcentajeRecargo) / 100);
+  if (prioridadActiva) {
+    // Calculamos el valor del 20% de recargo y lo redondeamos a pesos enteros
+    const valorRecargo = Math.round((precioNumerico * porcentajeOficial) / 100);
     const totalPagar = precioNumerico + valorRecargo;
+
     return {
       parametroN: N,
-      porcentajeRecargo,
-      valorRecargo,
-      totalPagar,
+      porcentajeRecargo: porcentajeOficial,
+      valorRecargo: valorRecargo,
+      totalPagar: totalPagar,
       prioritario: true
     };
   } else {
+    // Sin prioridad: No hay recargo y el total es exactamente el precio base
     return {
       parametroN: N,
       porcentajeRecargo: 0,
@@ -108,69 +180,104 @@ function calcularTarifa(precioBase, esPrioritario) {
 }
 
 /**
- * Retorna todos los turnos almacenados.
+ * ------------------------------------------------------------------------------
+ * 5. CONSULTAR TODAS LAS SOLICITUDES
+ * ------------------------------------------------------------------------------
+ * Devuelve todas las solicitudes de asesoría existentes en el archivo JSON.
+ * Atiende al endpoint: GET /api/turnos
+ * 
+ * @returns {Array} Lista de solicitudes registradas.
  */
 function obtenerTodos() {
   return leerDatos();
 }
 
 /**
- * Retorna un turno por su identificador.
- * Si no existe, retorna null.
+ * ------------------------------------------------------------------------------
+ * 6. CONSULTAR UNA SOLICITUD ESPECÍFICA POR ID
+ * ------------------------------------------------------------------------------
+ * Busca en la lista una solicitud cuyo ID coincida con el solicitado.
+ * Atiende al endpoint: GET /api/turnos/:id
+ * 
+ * @param {string|number} id Identificador único a buscar.
+ * @returns {Object|null} El objeto de la solicitud encontrada o null si no existe.
  */
 function obtenerPorId(id) {
   const turnos = leerDatos();
+  // Comparamos como string para admitir tanto '1' como 1
   const turnoEncontrado = turnos.find(t => String(t.id) === String(id));
   return turnoEncontrado || null;
 }
 
 /**
- * Registra una nueva solicitud de asesoría académica, calcula la tarifa
- * aplicando la regla del equipo N y la persiste en data/turnos.json.
+ * ------------------------------------------------------------------------------
+ * 7. CREAR Y REGISTRAR UNA NUEVA SOLICITUD
+ * ------------------------------------------------------------------------------
+ * Atiende al endpoint: POST /api/turnos
+ * 
+ * Pasos que realiza:
+ * 1. Lee las solicitudes actuales.
+ * 2. Genera un nuevo ID autoincremental único (1, 2, 3...).
+ * 3. Ejecuta el cálculo matemático de la tarifa aplicando el recargo de N = 10.
+ * 4. Construye el objeto final con fecha de creación en estándar ISO.
+ * 5. Guarda el arreglo en `data/turnos.json`.
+ * 6. Retorna el objeto creado listo para responder al cliente.
+ * 
+ * @param {Object} datosTurno Información validada que viene del controlador.
+ * @returns {Object} Solicitud creada con ID y cálculos completos.
  */
-function crearTurno(datos) {
-  const turnos = leerDatos();
+function crearTurno(datosTurno) {
+  const turnosExistentes = leerDatos();
 
-  // Generar ID único incremental
+  // Generamos un ID autoincremental de forma confiable
   let siguienteId = 1;
-  if (turnos.length > 0) {
-    const idsNumericos = turnos
+  if (turnosExistentes.length > 0) {
+    const idsNumericos = turnosExistentes
       .map(t => parseInt(t.id, 10))
       .filter(num => !isNaN(num));
+
     if (idsNumericos.length > 0) {
       siguienteId = Math.max(...idsNumericos) + 1;
     } else {
-      siguienteId = turnos.length + 1;
+      siguienteId = turnosExistentes.length + 1;
     }
   }
 
-  // Ejecución del cálculo de tarifa en la capa de servicios
-  const calculo = calcularTarifa(datos.precioBase, datos.prioritario);
+  // Ejecutamos la regla de negocio y cálculo matemático en esta capa
+  const calculo = calcularTarifa(datosTurno.precioBase, datosTurno.prioritario);
 
+  // Armamos el objeto con formato limpio y consistente
   const nuevoTurno = {
     id: String(siguienteId),
-    estudiante: datos.estudiante.trim(),
-    tipoServicio: datos.tipoServicio.trim(),
-    tema: datos.tema.trim(),
-    fechaHora: datos.fechaHora,
-    precioBase: Number(datos.precioBase),
+    estudiante: datosTurno.estudiante.trim(),
+    tipoServicio: datosTurno.tipoServicio.trim(),
+    tema: datosTurno.tema.trim(),
+    fechaHora: datosTurno.fechaHora,
+    precioBase: Number(datosTurno.precioBase),
     prioritario: calculo.prioritario,
     parametroN: calculo.parametroN,
     porcentajeRecargo: calculo.porcentajeRecargo,
     valorRecargo: calculo.valorRecargo,
     totalPagar: calculo.totalPagar,
-    estado: datos.estado || 'Confirmada',
+    estado: datosTurno.estado || 'Confirmada',
     creadoEn: new Date().toISOString()
   };
 
-  turnos.push(nuevoTurno);
-  guardarDatos(turnos);
+  // Agregamos al arreglo y persistimos en disco
+  turnosExistentes.push(nuevoTurno);
+  guardarDatos(turnosExistentes);
 
   return nuevoTurno;
 }
 
 /**
- * Devuelve la configuración actual de negocio (N y porcentaje aplicable)
+ * ------------------------------------------------------------------------------
+ * 8. OBTENER INFORMACIÓN DE CONFIGURACIÓN DEL NEGOCIO
+ * ------------------------------------------------------------------------------
+ * Permite que el frontend y las pruebas conozcan qué N está activo y
+ * cuál es el porcentaje aplicable en cualquier momento.
+ * 
+ * @returns {Object} Detalle de N y porcentaje.
  */
 function obtenerConfiguracionNegocio() {
   const N = obtenerParametroN();
