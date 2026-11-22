@@ -88,5 +88,35 @@
     "totalPagar": 150000,
     "estado": "Confirmada",
     "creadoEn": "2026-11-22T06:29:43.786Z"
+  },
+  {
+    "id": "7",
+    "estudiante": "Laura Ximena Sánchez",
+    "tipoServicio": "Asesoría académica",
+    "tema": "Arquitectura de Software y Patrones de Diseño",
+    "fechaHora": "2026-12-10T15:00:00",
+    "precioBase": 200000,
+    "prioritario": true,
+    "parametroN": 10,
+    "porcentajeRecargo": 20,
+    "valorRecargo": 40000,
+    "totalPagar": 240000,
+    "estado": "Confirmada",
+    "creadoEn": "2026-11-22T06:31:39.940Z"
+  },
+  {
+    "id": "8",
+    "estudiante": "John Edison Jordan",
+    "tipoServicio": "Tutoría personalizada",
+    "tema": "Validaciones y Control de Errores HTTP",
+    "fechaHora": "2026-12-12T09:00:00",
+    "precioBase": 150000,
+    "prioritario": false,
+    "parametroN": 10,
+    "porcentajeRecargo": 0,
+    "valorRecargo": 0,
+    "totalPagar": 150000,
+    "estado": "Confirmada",
+    "creadoEn": "2026-11-22T06:31:39.946Z"
   }
 ]
