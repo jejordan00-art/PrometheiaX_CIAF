@@ -153,12 +153,15 @@ function actualizarCotizacionEnVivo() {
     if (esPrioritario) {
       quotationTagPrioridad.style.display = 'inline-block';
       quotationTagPrioridad.innerText = '★ Atención prioritaria';
+      quotationTagPrioridad.style.backgroundColor = '#FEF3C7';
+      quotationTagPrioridad.style.color = '#B45309';
+      quotationTagPrioridad.style.borderColor = '#FDE68A';
     } else {
       quotationTagPrioridad.style.display = 'inline-block';
       quotationTagPrioridad.innerText = 'Modalidad normal';
-      quotationTagPrioridad.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-      quotationTagPrioridad.style.color = '#94A3B8';
-      quotationTagPrioridad.style.borderColor = 'transparent';
+      quotationTagPrioridad.style.backgroundColor = '#F1F5F9';
+      quotationTagPrioridad.style.color = '#64748B';
+      quotationTagPrioridad.style.borderColor = '#E2E8F0';
     }
   }
 }
