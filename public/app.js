@@ -71,8 +71,10 @@ async function cargarConfiguracionBackend() {
         AppState.porcentajeRecargo = json.datos.porcentajeRecargo;
 
         // Actualizar textos en la UI según Figma
-        document.getElementById('nRuleText').innerText = `Equipo N = ${AppState.parametroN} · Recargo: ${AppState.porcentajeRecargo}%`;
-        document.getElementById('metricRecargoVal').innerText = `${AppState.porcentajeRecargo}%`;
+        const elNRule = document.getElementById('nRuleText');
+        if (elNRule) elNRule.innerText = `Equipo N = ${AppState.parametroN} · Recargo: ${AppState.porcentajeRecargo}%`;
+        const elMetric = document.getElementById('metricRecargoVal');
+        if (elMetric) elMetric.innerText = `${AppState.porcentajeRecargo}%`;
         document.getElementById('priorityExplain').innerText = `Activa un recargo del ${AppState.porcentajeRecargo}% sobre el precio base con la regla N × 2%`;
         document.getElementById('quotationRecargoLabel').innerText = `Recargo prioritario · ${AppState.porcentajeRecargo}%`;
         document.getElementById('quotationFormulaText').innerText = `Equipo N = ${AppState.parametroN} × 2% = ${AppState.porcentajeRecargo}%. El recargo solo aplica con prioridad activa.`;
