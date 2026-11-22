@@ -1,0 +1,28 @@
+{
+  "name": "prometheiax",
+  "version": "1.0.0",
+  "description": "PrometheiaX - Plataforma y Foro Académico con API REST por Capas para Solicitud de Asesorías Académicas (Taller CIAF)",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "test": "node test/turnos.test.js"
+  },
+  "keywords": [
+    "ciaf",
+    "arquitectura-cliente-servidor",
+    "express",
+    "api-rest",
+    "capas",
+    "prometheiax",
+    "foro-academico"
+  ],
+  "author": "Equipo CIAF",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

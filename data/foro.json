@@ -1,0 +1,49 @@
+[
+  {
+    "id": "post-1",
+    "titulo": "¿Cómo estructurar una API REST por capas en Node.js y Express?",
+    "categoria": "Arquitectura de Software",
+    "autor": "Estefanía Becerra",
+    "rol": "Estudiante CIAF",
+    "fecha": "2026-11-20T14:30:00.000Z",
+    "contenido": "Hola a todos. Estamos organizando el proyecto del taller final separando routes, controllers y services. ¿Cuál es la mejor práctica para que los controladores no toquen directamente el almacenamiento?",
+    "votos": 18,
+    "respuestas": [
+      {
+        "id": "resp-1",
+        "autor": "Profesor Asesor",
+        "fecha": "2026-11-20T15:10:00.000Z",
+        "contenido": "Excelente pregunta. El controlador únicamente debe orquestar: recibir req, validar campos con HTTP 400 y pasar la carga limpia al service. Toda la lógica de persistencia y cálculos matemáticos (como la regla N) debe residir en services/."
+      }
+    ]
+  },
+  {
+    "id": "post-2",
+    "titulo": "Diferencia entre Códigos de Estado HTTP 400 y 404 en validaciones",
+    "categoria": "Arquitectura Cliente-Servidor",
+    "autor": "Santiago Ceballos",
+    "rol": "Estudiante CIAF",
+    "fecha": "2026-11-21T09:15:00.000Z",
+    "contenido": "¿Cuándo debemos responder 400 Bad Request y cuándo 404 Not Found al consumir endpoints tipo turnos?",
+    "votos": 12,
+    "respuestas": [
+      {
+        "id": "resp-2",
+        "autor": "Ana Gómez",
+        "fecha": "2026-11-21T10:05:00.000Z",
+        "contenido": "400 Bad Request se usa cuando el cliente envió datos incompletos o inválidos en el cuerpo (ej. precioBase <= 0 o campos faltantes). 404 Not Found se usa cuando el recurso solicitado por su ID no existe en el sistema."
+      }
+    ]
+  },
+  {
+    "id": "post-3",
+    "titulo": "Preparación para la sustentación del Taller Final de Arquitectura",
+    "categoria": "Comunidad Académica",
+    "autor": "Juan Esteban Jaramillo",
+    "rol": "Estudiante CIAF",
+    "fecha": "2026-11-21T16:00:00.000Z",
+    "contenido": "Recuerden que para la sustentación el docente elegirá al azar quién explica cada capa. Les sugiero revisar la Guía de Sustentación y hacer pruebas con Postman y el panel web de PrometheiaX.",
+    "votos": 25,
+    "respuestas": []
+  }
+]

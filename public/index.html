@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrometheiaX — Foro Académico & API de Asesorías CIAF</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- ENCABEZADO Y BARRA DE NAVEGACIÓN -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">Prometheia<span class="brand-x">X</span></span>
+          <span class="brand-subtitle">Foro Académico & Asesorías</span>
+        </div>
+      </div>
+
+      <div class="institutional-badge">
+        <span class="badge-tag">CIAF</span>
+        <span class="badge-desc">Arquitectura Cliente-Servidor</span>
+        <div class="badge-n" id="badgeNInfo" title="Parámetro N configurable según lista oficial">
+          Cargando N...
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <button class="nav-btn active" data-tab="tab-asesorias">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Solicitar Asesoría
+        </button>
+        <button class="nav-btn" data-tab="tab-turnos">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Solicitudes Registradas (<span id="totalTurnosBadge">0</span>)
+        </button>
+        <button class="nav-btn" data-tab="tab-foro">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Foro Académico
+        </button>
+        <button class="nav-btn nav-btn-highlight" data-tab="tab-sustentacion">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Consola Sustentación (HTTP)
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <main class="main-container">
+
+    <!-- SECCIÓN 1: SOLICITAR ASESORÍA (CASO DE NEGOCIO TALLER CIAF) -->
+    <section id="tab-asesorias" class="tab-content active">
+      <div class="section-hero">
+        <div class="hero-content">
+          <div class="pill-status">
+            <span class="status-dot"></span> API REST por Capas (Routes • Controllers • Services)
+          </div>
+          <h1>Gestión de Asesorías Académicas</h1>
+          <p>
+            Caso de negocio oficial para el Taller Evaluativo Final de CIAF. Registra una solicitud de asesoría académica individualizada, calcula automáticamente la tarifa y aplica el recargo por prioridad basado en el parámetro <strong>N</strong> del equipo.
+          </p>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-card">
+            <span class="stat-label">Regla de Negocio</span>
+            <span class="stat-value" id="heroFormula">N × 2%</span>
+            <span class="stat-sub">Porcentaje de recargo prioritario</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Capa de Lógica</span>
+            <span class="stat-value">services/</span>
+            <span class="stat-sub">Cálculos matemáticos estrictos</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="layout-grid-2">
+        <!-- FORMULARIO DE REGISTRO -->
+        <div class="card form-card">
+          <div class="card-header">
+            <div class="card-header-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </div>
+            <div>
+              <h2>Formulario de Solicitud de Asesoría</h2>
+              <p>Envía los datos validados hacia <code>POST /api/turnos</code></p>
+            </div>
+          </div>
+
+          <form id="formTurno" class="turno-form">
+            <div class="form-group">
+              <label for="estudiante">Nombre del Estudiante <span class="required">*</span></label>
+              <input type="text" id="estudiante" name="estudiante" placeholder="Ej: Ana Gómez" required>
+              <span class="input-hint">Nombre completo del solicitante universitario</span>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="tipoServicio">Tipo de Asesoría <span class="required">*</span></label>
+                <select id="tipoServicio" name="tipoServicio" required>
+                  <option value="Asesoría académica">Asesoría académica individual</option>
+                  <option value="Tutoría personalizada">Tutoría personalizada de código</option>
+                  <option value="Revisión de proyecto de grado">Revisión de proyecto de grado</option>
+                  <option value="Preparación de sustentación">Preparación de sustentación</option>
+                  <option value="Laboratorio práctico guiado">Laboratorio práctico guiado</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="tema">Tema Académico <span class="required">*</span></label>
+                <input type="text" id="tema" name="tema" placeholder="Ej: Arquitectura de software" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="fechaHora">Fecha y Hora Programada <span class="required">*</span></label>
+                <input type="datetime-local" id="fechaHora" name="fechaHora" required>
+              </div>
+
+              <div class="form-group">
+                <label for="precioBase">Precio Base (COP) <span class="required">*</span></label>
+                <input type="number" id="precioBase" name="precioBase" min="1" step="5000" placeholder="Ej: 200000" value="200000" required>
+                <span class="input-hint">Debe ser un valor numérico estricto mayor a 0</span>
+              </div>
+            </div>
+
+            <!-- SWITCH DE PRIORIDAD -->
+            <div class="priority-box">
+              <label class="switch-container">
+                <input type="checkbox" id="prioritario" name="prioritario" checked>
+                <span class="slider"></span>
+              </label>
+              <div class="priority-text">
+                <span class="priority-title">Solicitar Atención Prioritaria</span>
+                <span class="priority-desc" id="priorityDesc">
+                  Aplica el recargo oficial del equipo (<strong id="prioridadPorcentajeText">14%</strong>) según la regla <code>N × 2%</code>.
+                </span>
+              </div>
+            </div>
+
+            <!-- SIMULADOR DE CÁLCULO EN VIVO -->
+            <div class="calc-preview">
+              <div class="calc-row">
+                <span>Precio base simulado:</span>
+                <strong id="previewPrecioBase">$ 200.000 COP</strong>
+              </div>
+              <div class="calc-row">
+                <span>Recargo prioritario (<span id="previewPorcentaje">14%</span>):</span>
+                <strong id="previewRecargo" class="highlight-orange">+ $ 28.000 COP</strong>
+              </div>
+              <div class="calc-divider"></div>
+              <div class="calc-row total-row">
+                <span>Total a pagar calculado:</span>
+                <strong id="previewTotal" class="highlight-green">$ 228.000 COP</strong>
+              </div>
+            </div>
+
+            <button type="submit" id="btnSubmitTurno" class="btn btn-primary btn-block">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Registrar Solicitud en la API REST (POST /api/turnos)
+            </button>
+          </form>
+
+          <!-- ALERTAS DE RESULTADO -->
+          <div id="resultadoAlerta" class="alert-box hidden"></div>
+        </div>
+
+        <!-- EXPLICACIÓN DE ARQUITECTURA Y REGLAS -->
+        <div class="card info-card">
+          <div class="card-header">
+            <div class="card-header-icon secondary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </div>
+            <div>
+              <h2>Arquitectura Técnica y Regla N</h2>
+              <p>Requisitos de la rúbrica oficial CIAF</p>
+            </div>
+          </div>
+
+          <div class="info-accordion">
+            <div class="info-item">
+              <h3>1. Separación Estricta de Responsabilidades</h3>
+              <ul class="clean-list">
+                <li><strong>routes/turnos.routes.js:</strong> Define endpoints limpios y los asocia a sus controladores.</li>
+                <li><strong>controllers/turnos.controller.js:</strong> Valida entradas JSON, asigna códigos HTTP (200, 201, 400, 404) y responde al cliente.</li>
+                <li><strong>services/turnos.service.js:</strong> Contiene la fórmula matemática, la lógica de negocio y lee/escribe en <code>data/turnos.json</code>.</li>
+              </ul>
+            </div>
+
+            <div class="info-item">
+              <h3>2. Regla de Negocio del Equipo (N)</h3>
+              <div class="formula-box">
+                <code>porcentajeRecargo = N × 2%</code><br>
+                <code>totalPagar = precioBase + (precioBase × porcentajeRecargo / 100)</code>
+              </div>
+              <p class="formula-caption">
+                Si <code>prioritario = false</code> o no se especifica, <code>totalPagar = precioBase</code> sin recargo.
+              </p>
+            </div>
+
+            <div class="info-item">
+              <h3>3. Parámetro N Activo en el Servidor</h3>
+              <div class="n-card">
+                <div class="n-value-badge" id="nValDisplay">N = 7</div>
+                <div>
+                  <div class="n-title">Configuración por variable de entorno</div>
+                  <div class="n-sub">Modificable en <code>.env</code> con <code>EQUIPO_N=&lt;valor&gt;</code> sin alterar el código fuente.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <h3>4. Almacenamiento Local</h3>
+              <p>Los datos se guardan en <code>data/turnos.json</code> en tiempo real, garantizando persistencia local según lo solicitado en el taller.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: CONSULTA DE TURNOS REGISTRADOS -->
+    <section id="tab-turnos" class="tab-content">
+      <div class="section-hero">
+        <div class="hero-content">
+          <h1>Solicitudes de Asesoría Registradas</h1>
+          <p>
+            Registros persistidos en <code>data/turnos.json</code>. Esta sección consume directamente <code>GET /api/turnos</code> y <code>GET /api/turnos/:id</code>.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <button id="btnRecargarTurnos" class="btn btn-secondary">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Recargar desde API (GET /api/turnos)
+          </button>
+        </div>
+      </div>
+
+      <!-- BUSCADOR POR ID (PARA DEMOSTRAR 200 Y 404) -->
+      <div class="card search-card">
+        <div class="search-flex">
+          <div class="search-input-wrap">
+            <label for="buscarIdInput">Consultar solicitud específica por Identificador (ID):</label>
+            <div class="input-with-button">
+              <input type="text" id="buscarIdInput" placeholder="Ej: 1 (existente) o 9999 (inexistente)">
+              <button id="btnBuscarId" class="btn btn-primary">
+                Buscar (GET /api/turnos/:id)
+              </button>
+            </div>
+          </div>
+          <div class="search-info">
+            <span class="hint-title">Prueba de Códigos HTTP:</span>
+            <span>Usa un ID existente (ej: <strong>1</strong>) para ver <strong>HTTP 200 OK</strong>.</span>
+            <span>Usa un ID que no exista (ej: <strong>9999</strong>) para verificar <strong>HTTP 404 Not Found</strong>.</span>
+          </div>
+        </div>
+        <div id="resultadoBusquedaId" class="search-result-box hidden"></div>
+      </div>
+
+      <!-- LISTADO DE TURNOS -->
+      <div class="card table-card">
+        <div class="card-header">
+          <h2>Lista de Solicitudes en el Sistema</h2>
+          <span class="badge-counter" id="tableCounter">0 solicitudes</span>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Estudiante</th>
+                <th>Servicio / Tema</th>
+                <th>Fecha y Hora</th>
+                <th>Precio Base</th>
+                <th>Prioritario</th>
+                <th>Recargo (N)</th>
+                <th>Total a Pagar</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="turnosTableBody">
+              <tr>
+                <td colspan="9" class="loading-cell">Cargando solicitudes desde la API...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 3: FORO ACADÉMICO PROMETHEIAX -->
+    <section id="tab-foro" class="tab-content">
+      <div class="section-hero">
+        <div class="hero-content">
+          <h1>Foro Académico PrometheiaX</h1>
+          <p>
+            Espacio colaborativo donde los estudiantes universitarios debaten sobre Arquitectura de Software, resuelven dudas técnicas y coordinan grupos de estudio.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <button id="btnAbrirModalPost" class="btn btn-primary">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            Nueva Pregunta o Debate
+          </button>
+        </div>
+      </div>
+
+      <!-- FILTRO DE CATEGORÍAS -->
+      <div class="categories-bar">
+        <button class="cat-pill active" data-cat="all">Todas las Categorías</button>
+        <button class="cat-pill" data-cat="Arquitectura de Software">Arquitectura de Software</button>
+        <button class="cat-pill" data-cat="Arquitectura Cliente-Servidor">Arquitectura Cliente-Servidor</button>
+        <button class="cat-pill" data-cat="Comunidad Académica">Comunidad Académica</button>
+      </div>
+
+      <!-- LISTA DE PREGUNTAS / PUBLICACIONES -->
+      <div id="foroPostsContainer" class="foro-grid">
+        <!-- Renderizado dinámico desde /api/foro -->
+      </div>
+    </section>
+
+    <!-- SECCIÓN 4: CONSOLA DE SUSTENTACIÓN Y PRUEBAS HTTP -->
+    <section id="tab-sustentacion" class="tab-content">
+      <div class="section-hero">
+        <div class="hero-content">
+          <div class="pill-status warning">
+            <span class="status-dot"></span> Módulo Especial para la Sustentación con el Docente
+          </div>
+          <h1>Consola Interactiva de Protocolos HTTP</h1>
+          <p>
+            Demuestra en vivo y en 1 clic el cumplimiento exacto de la rúbrica de evaluación: códigos de estado <strong>200 OK</strong>, <strong>201 Created</strong>, <strong>400 Bad Request</strong> y <strong>404 Not Found</strong>, inspeccionando encabezados, tiempos de respuesta y payloads JSON.
+          </p>
+        </div>
+      </div>
+
+      <div class="layout-grid-2">
+        <!-- BOTONES DE PRUEBA RÁPIDA -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Pruebas Rápidas de Evaluación</h2>
+            <p>Haz clic para ejecutar la petición real en el servidor</p>
+          </div>
+
+          <div class="test-buttons-grid">
+            <button class="test-btn btn-http-200" data-test="get-todos">
+              <div class="btn-top">
+                <span class="http-badge status-200">200 OK</span>
+                <span class="method-tag">GET</span>
+              </div>
+              <div class="btn-title">Listar todas las solicitudes</div>
+              <div class="btn-url">/api/turnos</div>
+            </button>
+
+            <button class="test-btn btn-http-200" data-test="get-uno">
+              <div class="btn-top">
+                <span class="http-badge status-200">200 OK</span>
+                <span class="method-tag">GET</span>
+              </div>
+              <div class="btn-title">Consultar turno existente</div>
+              <div class="btn-url">/api/turnos/1</div>
+            </button>
+
+            <button class="test-btn btn-http-404" data-test="get-inexistente">
+              <div class="btn-top">
+                <span class="http-badge status-404">404 NOT FOUND</span>
+                <span class="method-tag">GET</span>
+              </div>
+              <div class="btn-title">Consultar ID inexistente</div>
+              <div class="btn-url">/api/turnos/999999</div>
+            </button>
+
+            <button class="test-btn btn-http-201" data-test="post-prioritario">
+              <div class="btn-top">
+                <span class="http-badge status-201">201 CREATED</span>
+                <span class="method-tag">POST</span>
+              </div>
+              <div class="btn-title">Crear con Prioridad (Recargo N)</div>
+              <div class="btn-url">/api/turnos (prioritario: true)</div>
+            </button>
+
+            <button class="test-btn btn-http-201" data-test="post-normal">
+              <div class="btn-top">
+                <span class="http-badge status-201">201 CREATED</span>
+                <span class="method-tag">POST</span>
+              </div>
+              <div class="btn-title">Crear Normal (Sin Recargo)</div>
+              <div class="btn-url">/api/turnos (prioritario: false)</div>
+            </button>
+
+            <button class="test-btn btn-http-400" data-test="post-incompleto">
+              <div class="btn-top">
+                <span class="http-badge status-400">400 BAD REQUEST</span>
+                <span class="method-tag">POST</span>
+              </div>
+              <div class="btn-title">Campos faltantes / vacíos</div>
+              <div class="btn-url">/api/turnos (body inválido)</div>
+            </button>
+
+            <button class="test-btn btn-http-400" data-test="post-precio-invalido">
+              <div class="btn-top">
+                <span class="http-badge status-400">400 BAD REQUEST</span>
+                <span class="method-tag">POST</span>
+              </div>
+              <div class="btn-title">Precio base &le; 0</div>
+              <div class="btn-url">/api/turnos (precioBase: -50000)</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- VISUALIZADOR DE RESPUESTA EN VIVO -->
+        <div class="card terminal-card">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+            </div>
+            <div class="terminal-title">Inspector HTTP en Tiempo Real</div>
+            <div class="terminal-timing" id="termTiming">Listo para emitir</div>
+          </div>
+
+          <div class="terminal-body">
+            <div class="terminal-meta">
+              <div><strong>Método & Ruta:</strong> <span id="termRequest">Ninguna petición ejecutada</span></div>
+              <div><strong>Código de Estado:</strong> <span id="termStatus" class="status-pill-term">-</span></div>
+            </div>
+
+            <div class="terminal-section-title">Cuerpo de la Petición Enviada (JSON Request):</div>
+            <pre class="json-code" id="termRequestBody">// Haz clic en uno de los botones para disparar una petición</pre>
+
+            <div class="terminal-section-title">Respuesta del Servidor (JSON Response):</div>
+            <pre class="json-code" id="termResponseBody">// La respuesta del servidor aparecerá aquí formateada</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL PARA NUEVA PREGUNTA EN EL FORO -->
+  <div id="modalNuevoPost" class="modal-backdrop hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Publicar Pregunta en el Foro PrometheiaX</h3>
+        <button id="btnCerrarModalPost" class="close-btn">&times;</button>
+      </div>
+      <form id="formForoPost" class="modal-form">
+        <div class="form-group">
+          <label for="postTitulo">Título de la Pregunta o Debate <span class="required">*</span></label>
+          <input type="text" id="postTitulo" placeholder="Ej: ¿Cómo implementar el recargo N en services?" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="postAutor">Tu Nombre <span class="required">*</span></label>
+            <input type="text" id="postAutor" placeholder="Ej: Carlos Andrés Toro" required>
+          </div>
+          <div class="form-group">
+            <label for="postCategoria">Categoría <span class="required">*</span></label>
+            <select id="postCategoria" required>
+              <option value="Arquitectura de Software">Arquitectura de Software</option>
+              <option value="Arquitectura Cliente-Servidor">Arquitectura Cliente-Servidor</option>
+              <option value="Comunidad Académica">Comunidad Académica</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="postContenido">Descripción detallada <span class="required">*</span></label>
+          <textarea id="postContenido" rows="4" placeholder="Explica tu duda o comparte tu aporte técnico..." required></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="btnCancelarModalPost" class="btn btn-secondary">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Publicar Pregunta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <strong>PrometheiaX</strong> — Plataforma Académica y Foro Universitario
+      </div>
+      <div class="footer-copy">
+        Taller Evaluativo Final • Arquitectura Cliente-Servidor • Corporación Instituto de Administración y Finanzas (CIAF)
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
