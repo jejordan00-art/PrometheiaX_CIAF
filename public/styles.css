@@ -251,17 +251,19 @@ body {
 
 /* NAVBAR GLOBAL (FIGMA 2:441) */
 .navbar-global {
-  height: 72px;
+  min-height: 72px;
   border-bottom: 1px solid var(--border-line);
   background-color: rgba(17, 24, 39, 0.75);
   backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--space-8);
+  padding: 12px var(--space-8);
   position: sticky;
   top: 0;
   z-index: 40;
+  gap: var(--space-4);
+  flex-wrap: wrap;
 }
 
 .nav-search {
@@ -273,6 +275,7 @@ body {
   border-radius: var(--radius-md);
   padding: 8px 14px;
   width: 320px;
+  max-width: 100%;
   color: var(--text-dim);
 }
 
