@@ -147,9 +147,11 @@ function crearTurno(req, res) {
     if (!fechaHora || typeof fechaHora !== 'string' || fechaHora.trim() === '') {
       listaErrores.push('El campo "fechaHora" es obligatorio (en formato estándar ISO 8601 ej: "2026-12-05T10:00:00").');
     } else {
+      // Validamos que cumpla formato estándar de fecha (iniciando con año-mes-día) y sea fecha real
+      const tieneFormatoValido = /^\d{4}-\d{2}-\d{2}/.test(fechaHora.trim());
       const fechaValida = new Date(fechaHora);
-      if (isNaN(fechaValida.getTime())) {
-        listaErrores.push('El campo "fechaHora" no tiene un formato de fecha y hora válido.');
+      if (!tieneFormatoValido || isNaN(fechaValida.getTime())) {
+        listaErrores.push('El campo "fechaHora" no tiene un formato de fecha y hora válido (ej: "2026-12-05T10:00:00").');
       }
     }
 

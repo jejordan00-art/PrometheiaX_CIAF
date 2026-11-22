@@ -7,7 +7,11 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch index.js",
-    "test": "node test/turnos.test.js"
+    "test": "node test/run_all_tests.js",
+    "test:unit": "node test/unit.test.js",
+    "test:integration": "node test/integration.test.js",
+    "test:security": "node test/security_edge.test.js",
+    "test:load": "node test/load_stress.test.js"
   },
   "keywords": [
     "ciaf",
