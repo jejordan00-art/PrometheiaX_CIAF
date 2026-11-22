@@ -107,8 +107,12 @@ def generar_guia_sustentacion():
     r_sub.bold = True
     r_sub.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
 
-    add_callout(doc, "OBJETIVO DE ESTA GUÍA PARA EL EQUIPO", 
-                "El docente de CIAF seleccionará al azar a cualquier integrante para explicar cualquier capa (routes, controllers, services) o realizar pruebas en vivo. Con este documento, TODOS los miembros del equipo comprenderán qué hace cada línea de código, qué código HTTP responde el servidor y cómo justificar con solvencia técnica cada decisión arquitectónica.",
+    add_callout(doc, "INTEGRANTES OFICIALES DEL EQUIPO (GRUPO 1 MARTES)",
+                "• 1. Jordan Rivas, John Edison — Lista Oficial CIAF: Puesto #10 (N = 10)\n"
+                "• 2. Sánchez Rodríguez, Laura Ximena — Lista Oficial CIAF: Puesto #19\n\n"
+                "Regla de Orden Alfabético por Apellido: La letra 'J' (Jordan) precede a la letra 'S' (Sánchez). "
+                "Por lo tanto, el primer integrante es John Edison Jordan Rivas y el parámetro oficial es N = 10. "
+                "Porcentaje de recargo resultante: N × 2% = 10 × 2% = 20%.",
                 bg_color="EEF2FF", border_color="4F46E5")
 
     # SECCIÓN 1: CONTEXTO DEL NEGOCIO
@@ -146,10 +150,10 @@ def generar_guia_sustentacion():
                 bg_color="FEF3C7", border_color="D97706")
 
     p = doc.add_paragraph(
-        "Ejemplo con N = 7 (Porcentaje aplicable = 14%):\n"
+        "Ejemplo con N = 10 (Porcentaje aplicable = 20%):\n"
         "• Solicitud con precioBase = $200.000 COP y prioritario = true:\n"
-        "  Recargo = 200.000 * 14% = $28.000 COP\n"
-        "  Total a Pagar = $200.000 + $28.000 = $228.000 COP.\n"
+        "  Recargo = 200.000 * 20% = $40.000 COP\n"
+        "  Total a Pagar = $200.000 + $40.000 = $240.000 COP.\n"
         "• Solicitud con precioBase = $150.000 COP y prioritario = false:\n"
         "  Recargo = $0 COP\n"
         "  Total a Pagar = $150.000 COP."

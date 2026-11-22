@@ -9,30 +9,41 @@
 
 ## 1. Integrantes del Equipo y Asignación del Parámetro N
 
-De acuerdo con las instrucciones oficiales del taller evaluativo de CIAF, los integrantes del equipo se ordenan estrictamente de manera **alfabética por apellido**. El parámetro **N** del equipo corresponde al **número oficial de lista del primer integrante** en dicho orden.
+De acuerdo con las instrucciones oficiales del taller evaluativo de CIAF, los integrantes del equipo se ordenan estrictamente de manera **alfabética por apellido** según el listado oficial de asistencia (Página 5 del PDF). El parámetro **N** del equipo corresponde al **número oficial de lista del primer integrante** en dicho orden.
 
-### Plantilla de Integrantes Oficiales
+### Integrantes Oficiales del Equipo (Arquitectura de Software - Grupo 1 Martes)
 
 | # | Apellidos y Nombres | Número en Lista Oficial CIAF | Grupo de Clase | Rol en el Proyecto |
 |---|---------------------|:----------------------------:|:--------------:|---------------------|
-| 1 | *(Primer Integrante por Apellido)* | **N = [Número de Lista]** | Martes | Arquitectura y Capa Services |
-| 2 | *(Segundo Integrante)* | [Número de Lista] | Martes | Capa Controllers y Validaciones |
-| 3 | *(Tercer Integrante)* | [Número de Lista] | Martes | Capa Routes y Protocolos HTTP |
-| 4 | *(Cuarto Integrante)* | [Número de Lista] | Martes | Frontend e Integración Web |
+| 1 | **Jordan Rivas, John Edison** | **#10 (N = 10)** | Grupo 1 martes | Arquitectura, Capa Services y Lógica N |
+| 2 | **Sánchez Rodríguez, Laura Ximena** | **#19** | Grupo 1 martes | Capa Controllers, Routes y Validaciones HTTP |
 
-> **Nota para la Sustentación:**  
-> Por defecto en este repositorio el parámetro configurado de demostración es **`EQUIPO_N=7`** (correspondiente a un recargo del **14%**). Para asignar el número real de tu equipo, simplemente edita la variable `EQUIPO_N` en el archivo `.env` antes de sustentar, sin necesidad de modificar el código fuente.
+> **Justificación de la Obtención de N:**  
+> Al ordenar alfabéticamente por apellido los integrantes del equipo:
+> 1. **Jordan Rivas, John Edison** (Letra 'J') → Puesto **#10** en la lista oficial de CIAF.
+> 2. **Sánchez Rodríguez, Laura Ximena** (Letra 'S') → Puesto **#19** en la lista oficial de CIAF.
+> 
+> Como el primer integrante por orden alfabético es **John Edison Jordan Rivas**, el valor de **N asignado al equipo es exactamente N = 10**.
+> Este parámetro se encuentra configurado en la variable de entorno `EQUIPO_N=10` en el archivo `.env`.
 
 ### Cálculo del Porcentaje de Recargo Oficial
 $$\text{porcentajeRecargo} = N \times 2\%$$
 
-* **Ejemplo con N = 7:**  
-  $$\text{porcentajeRecargo} = 7 \times 2\% = 14\%$$
+$$\text{porcentajeRecargo} = 10 \times 2\% = \mathbf{20\%}$$
+
 * **Fórmula de Tarifa Final en `services/turnos.service.js`:**
   * Si `prioritario = true`:
-    $$\text{totalPagar} = \text{precioBase} + \left(\text{precioBase} \times \frac{N \times 2}{100}\right)$$
+    $$\text{totalPagar} = \text{precioBase} + \left(\text{precioBase} \times \frac{20}{100}\right)$$
   * Si `prioritario = false` o no se especifica:
     $$\text{totalPagar} = \text{precioBase}$$
+
+* **Demostración de Cálculo Real:**
+  * Para una asesoría con `precioBase = 200.000 COP` y `prioritario = true`:
+    $$\text{Recargo} = 200.000 \times 20\% = 40.000\text{ COP}$$
+    $$\text{totalPagar} = 200.000 + 40.000 = \mathbf{240.000\text{ COP}}$$
+  * Para una asesoría con `precioBase = 150.000 COP` y `prioritario = false`:
+    $$\text{Recargo} = 0\text{ COP}$$
+    $$\text{totalPagar} = \mathbf{150.000\text{ COP}}$$
 
 ---
 
@@ -126,31 +137,31 @@ universidad/
 }
 ```
 
-**Respuesta del Servidor (Response JSON — HTTP 201 Created con N = 7):**
+**Respuesta del Servidor (Response JSON — HTTP 201 Created con N = 10):**
 ```json
 {
   "exito": true,
   "mensaje": "Solicitud de asesoría académica registrada exitosamente.",
   "datos": {
     "id": "3",
-    "estudiante": "Ana Gómez",
+    "estudiante": "Laura Ximena Sánchez",
     "tipoServicio": "Asesoría académica",
     "tema": "Arquitectura de software",
     "fechaHora": "2026-12-05T10:00:00",
     "precioBase": 200000,
     "prioritario": true,
-    "parametroN": 7,
-    "porcentajeRecargo": 14,
-    "valorRecargo": 28000,
-    "totalPagar": 228000,
+    "parametroN": 10,
+    "porcentajeRecargo": 20,
+    "valorRecargo": 40000,
+    "totalPagar": 240000,
     "estado": "Confirmada",
     "creadoEn": "2026-11-21T19:45:00.000Z"
   }
 }
 ```
 *Demostración del cálculo:*  
-$\text{Recargo} = 200.000 \times 14\% = 28.000$ COP.  
-$\text{Total a Pagar} = 200.000 + 28.000 = 228.000$ COP.
+$\text{Recargo} = 200.000 \times 20\% = 40.000$ COP.  
+$\text{Total a Pagar} = 200.000 + 40.000 = 240.000$ COP.
 
 ---
 

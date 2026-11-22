@@ -25,7 +25,7 @@ const RUTA_DATOS = path.join(__dirname, '..', 'data', 'turnos.json');
 function obtenerParametroN() {
   const nEnv = process.env.EQUIPO_N;
   const n = parseInt(nEnv, 10);
-  return (!isNaN(n) && n > 0) ? n : 7;
+  return (!isNaN(n) && n > 0) ? n : 10;
 }
 
 /**
