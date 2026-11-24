@@ -121,6 +121,17 @@ if (require.main === module) {
     console.log(` Parámetro N configurado: N = ${N} (Recargo prioritario: ${N * 2}%)`);
     console.log('================================================================');
   });
+
+  // Manejo elegante si el puerto ya está ocupado por otra instancia
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`\n❌ ERROR (EADDRINUSE): El puerto ${PORT} ya está siendo utilizado por otro proceso de Node.js o aplicación.`);
+      console.error(`👉 Solución 1: En tu archivo .env cambia 'PORT=3000' por 'PORT=3001' y vuelve a ejecutar.`);
+      console.error(`👉 Solución 2: En Windows ejecuta 'taskkill /F /IM node.exe' para cerrar procesos colgados.\n`);
+    } else {
+      console.error('Error inesperado al iniciar el servidor HTTP:', err.message);
+    }
+  });
 }
 
 module.exports = { app, server };
