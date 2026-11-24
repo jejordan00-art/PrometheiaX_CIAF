@@ -193,7 +193,7 @@ $\text{Total a Pagar} = 200.000 + 40.000 = 240.000$ COP.
     "fechaHora": "2026-12-06T14:30:00",
     "precioBase": 150000,
     "prioritario": false,
-    "parametroN": 7,
+    "parametroN": 10,
     "porcentajeRecargo": 0,
     "valorRecargo": 0,
     "totalPagar": 150000,
