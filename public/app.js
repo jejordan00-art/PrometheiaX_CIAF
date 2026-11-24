@@ -4,8 +4,8 @@
  */
 
 const AppState = {
-  parametroN: 7,
-  porcentajeRecargo: 14,
+  parametroN: 10,
+  porcentajeRecargo: 20,
   turnos: [],
   foroPosts: [],
   categoriaActiva: 'all'
@@ -19,6 +19,7 @@ const formateadorCOP = new Intl.NumberFormat('es-CO', {
 
 document.addEventListener('DOMContentLoaded', () => {
   inicializarNavegacionSidebar();
+  configurarBuscadorGlobal();
   cargarConfiguracionBackend();
   configurarCalculadoraCotizacion();
   configurarFormularioRegistro();
@@ -40,7 +41,7 @@ function inicializarNavegacionSidebar() {
   });
 }
 
-window.irATab = function(tabId) {
+window.irATab = function(tabId, preserveFilter = false) {
   const navItems = document.querySelectorAll('.sidebar-menu .nav-item');
   const viewTabs = document.querySelectorAll('.view-tab');
 
@@ -54,9 +55,9 @@ window.irATab = function(tabId) {
   if (targetTab) targetTab.classList.add('active');
 
   if (tabId === 'tab-solicitudes') {
-    cargarTurnos();
+    if (!preserveFilter) cargarTurnos();
   } else if (tabId === 'tab-foro') {
-    cargarForo();
+    if (!preserveFilter) cargarForo();
   }
 };
 
@@ -244,7 +245,236 @@ function configurarFormularioRegistro() {
   });
 }
 
-// 6. CARGAR LISTA DE TURNOS (GET /api/turnos)
+// 6. BUSCADOR GLOBAL Y EN TIEMPO REAL (NAVBAR)
+function configurarBuscadorGlobal() {
+  const inputGlobal = document.getElementById('globalSearchInput');
+  const btnClear = document.getElementById('btnClearGlobalSearch');
+  const resultsDropdown = document.getElementById('navSearchResults');
+  const searchContainer = document.getElementById('navSearchContainer');
+
+  if (!inputGlobal) return;
+
+  function ejecutarBusquedaGlobal(query) {
+    const q = (query || '').trim().toLowerCase();
+
+    // Mostrar/ocultar botón de limpiar (✕)
+    if (btnClear) {
+      if (q.length > 0) btnClear.classList.remove('hidden');
+      else btnClear.classList.add('hidden');
+    }
+
+    // Si el texto está vacío, ocultamos dropdown y restauramos vistas completas
+    if (!q) {
+      if (resultsDropdown) resultsDropdown.classList.add('hidden');
+      renderizarTablaTurnos(AppState.turnos);
+      renderizarForo();
+      return;
+    }
+
+    // 1. Filtrar solicitudes de asesoría por ID, estudiante, tema o tipo
+    const turnosCoincidentes = AppState.turnos.filter(t => {
+      const matchId = String(t.id).toLowerCase().includes(q) || `#${t.id}`.includes(q);
+      const matchEstudiante = (t.estudiante || '').toLowerCase().includes(q);
+      const matchTema = (t.tema || '').toLowerCase().includes(q);
+      const matchTipo = (t.tipoServicio || '').toLowerCase().includes(q);
+      return matchId || matchEstudiante || matchTema || matchTipo;
+    });
+
+    // 2. Filtrar publicaciones del foro por título, autor, categoría o contenido
+    const foroCoincidentes = AppState.foroPosts.filter(p => {
+      const matchTitulo = (p.titulo || '').toLowerCase().includes(q);
+      const matchAutor = (p.autor || '').toLowerCase().includes(q);
+      const matchCat = (p.categoria || '').toLowerCase().includes(q);
+      const matchCont = (p.contenido || '').toLowerCase().includes(q);
+      return matchTitulo || matchAutor || matchCat || matchCont;
+    });
+
+    // Si el usuario está viendo la pestaña "Mis Solicitudes", actualizamos la tabla en vivo
+    const tabSolicitudes = document.getElementById('tab-solicitudes');
+    if (tabSolicitudes && tabSolicitudes.classList.contains('active')) {
+      renderizarTablaTurnos(turnosCoincidentes, q);
+    }
+
+    // Si el usuario está en el "Foro Académico", actualizamos el grid del foro en vivo
+    const tabForo = document.getElementById('tab-foro');
+    if (tabForo && tabForo.classList.contains('active')) {
+      renderizarForoFiltrado(foroCoincidentes, q);
+    }
+
+    if (!resultsDropdown) return;
+
+    const totalResultados = turnosCoincidentes.length + foroCoincidentes.length;
+
+    if (totalResultados === 0) {
+      resultsDropdown.innerHTML = `
+        <div class="search-no-results">
+          🔍 No se encontraron solicitudes ni temas para <strong>"${escapeHTML(query)}"</strong>
+        </div>
+      `;
+      resultsDropdown.classList.remove('hidden');
+      return;
+    }
+
+    let html = '';
+
+    // Sección Solicitudes de Asesoría
+    if (turnosCoincidentes.length > 0) {
+      html += `
+        <div class="search-results-section">
+          <div class="search-group-header">
+            <span>🎓 Solicitudes de Asesoría (${turnosCoincidentes.length})</span>
+            <small>Clic para ver en tabla</small>
+          </div>
+      `;
+      turnosCoincidentes.slice(0, 4).forEach(t => {
+        html += `
+          <div class="search-result-row" onclick="irAResultadoTurno('${t.id}')">
+            <div class="search-result-info">
+              <span class="search-result-title">#${t.id} · ${resaltarTexto(t.estudiante, q)}</span>
+              <span class="search-result-sub">${resaltarTexto(t.tema, q)} · ${t.tipoServicio}</span>
+            </div>
+            <div class="search-result-meta">
+              <span class="search-result-price">${formateadorCOP.format(t.totalPagar)}</span>
+              ${t.prioritario 
+                ? '<span class="badge-tag-priority" style="font-size: 0.65rem; padding: 2px 6px;">Prioritaria</span>' 
+                : '<span class="badge-tag-normal" style="font-size: 0.65rem; padding: 2px 6px;">Normal</span>'}
+            </div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+    }
+
+    // Sección Foro Académico
+    if (foroCoincidentes.length > 0) {
+      html += `
+        <div class="search-results-section">
+          <div class="search-group-header">
+            <span>💬 Foro Académico (${foroCoincidentes.length})</span>
+            <small>Clic para ir al foro</small>
+          </div>
+      `;
+      foroCoincidentes.slice(0, 3).forEach(p => {
+        html += `
+          <div class="search-result-row" onclick="irAResultadoForo('${p.id}')">
+            <div class="search-result-info">
+              <span class="search-result-title">${resaltarTexto(p.titulo, q)}</span>
+              <span class="search-result-sub">Por ${resaltarTexto(p.autor, q)} en <strong style="color: var(--brand-primary);">${p.categoria}</strong></span>
+            </div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+    }
+
+    resultsDropdown.innerHTML = html;
+    resultsDropdown.classList.remove('hidden');
+  }
+
+  // Evento Input (búsqueda interactiva en tiempo real)
+  inputGlobal.addEventListener('input', (e) => {
+    ejecutarBusquedaGlobal(e.target.value);
+  });
+
+  inputGlobal.addEventListener('focus', () => {
+    if (inputGlobal.value.trim()) {
+      ejecutarBusquedaGlobal(inputGlobal.value);
+    }
+  });
+
+  // Al presionar Enter: navegar a la pestaña adecuada
+  inputGlobal.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const q = inputGlobal.value.trim().toLowerCase();
+      if (!q) return;
+
+      if (resultsDropdown) resultsDropdown.classList.add('hidden');
+
+      const matchTurno = AppState.turnos.some(t => 
+        String(t.id).includes(q) || (t.estudiante || '').toLowerCase().includes(q) || (t.tema || '').toLowerCase().includes(q)
+      );
+
+      if (matchTurno) {
+        irATab('tab-solicitudes', true);
+        const inputId = document.getElementById('inputIdBusqueda');
+        if (inputId) inputId.value = inputGlobal.value;
+        const filtrados = AppState.turnos.filter(t => 
+          String(t.id).includes(q) || (t.estudiante || '').toLowerCase().includes(q) || (t.tema || '').toLowerCase().includes(q) || (t.tipoServicio || '').toLowerCase().includes(q)
+        );
+        renderizarTablaTurnos(filtrados, q);
+      } else {
+        irATab('tab-foro', true);
+        const filtrados = AppState.foroPosts.filter(p =>
+          (p.titulo || '').toLowerCase().includes(q) || (p.autor || '').toLowerCase().includes(q) || (p.categoria || '').toLowerCase().includes(q) || (p.contenido || '').toLowerCase().includes(q)
+        );
+        renderizarForoFiltrado(filtrados, q);
+      }
+    } else if (e.key === 'Escape') {
+      if (resultsDropdown) resultsDropdown.classList.add('hidden');
+    }
+  });
+
+  // Botón Limpiar (✕)
+  if (btnClear) {
+    btnClear.addEventListener('click', () => {
+      inputGlobal.value = '';
+      const inputId = document.getElementById('inputIdBusqueda');
+      if (inputId) inputId.value = '';
+      const box = document.getElementById('boxResultadoId');
+      if (box) box.classList.add('hidden');
+      ejecutarBusquedaGlobal('');
+      inputGlobal.focus();
+    });
+  }
+
+  // Cerrar dropdown al hacer clic fuera
+  document.addEventListener('click', (e) => {
+    if (searchContainer && !searchContainer.contains(e.target)) {
+      if (resultsDropdown) resultsDropdown.classList.add('hidden');
+    }
+  });
+}
+
+// Navegar a un turno seleccionado desde la búsqueda
+window.irAResultadoTurno = function(id) {
+  const resultsDropdown = document.getElementById('navSearchResults');
+  if (resultsDropdown) resultsDropdown.classList.add('hidden');
+  irATab('tab-solicitudes', true);
+  const inputId = document.getElementById('inputIdBusqueda');
+  if (inputId) inputId.value = `#${id}`;
+  const turno = AppState.turnos.find(t => String(t.id) === String(id));
+  if (turno) {
+    renderizarTablaTurnos([turno], String(id));
+  }
+};
+
+// Navegar a un hilo del foro seleccionado desde la búsqueda
+window.irAResultadoForo = function(id) {
+  const resultsDropdown = document.getElementById('navSearchResults');
+  if (resultsDropdown) resultsDropdown.classList.add('hidden');
+  irATab('tab-foro', true);
+};
+
+// Resaltar coincidencias de texto
+function resaltarTexto(texto, query) {
+  if (!texto) return '';
+  if (!query) return escapeHTML(texto);
+  const escaped = escapeHTML(texto);
+  const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`(${escapedQuery})`, 'gi');
+  return escaped.replace(regex, '<span class="search-highlight">$1</span>');
+}
+
+function escapeHTML(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// 7. CARGAR Y RENDERIZAR LISTA DE TURNOS (GET /api/turnos)
 async function cargarTurnos() {
   const tbody = document.getElementById('tbodyTurnos');
   const countBadge = document.getElementById('sidebarBadgeCount');
@@ -265,72 +495,126 @@ async function cargarTurnos() {
       if (metricTotal) metricTotal.innerText = total;
       if (totalFilas) totalFilas.innerText = `${total} solicitudes en almacenamiento`;
 
-      if (total === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="empty-state">No hay solicitudes registradas aún. Registra una en el formulario.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = AppState.turnos.map(t => {
-        const fecha = new Date(t.fechaHora).toLocaleDateString('es-CO', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
-        });
-
-        return `
-          <tr>
-            <td><strong>#${t.id}</strong></td>
-            <td><strong>${t.estudiante}</strong></td>
-            <td>
-              <div>${t.tipoServicio}</div>
-              <small style="color: var(--text-dim);">${t.tema}</small>
-            </td>
-            <td>${fecha}</td>
-            <td>${formateadorCOP.format(t.precioBase)}</td>
-            <td>
-              ${t.prioritario 
-                ? '<span class="badge-tag-priority">Prioritaria</span>' 
-                : '<span class="badge-tag-normal">Normal</span>'}
-            </td>
-            <td>
-              ${t.prioritario 
-                ? `<span style="color: var(--accent-amber); font-weight: 600;">+${t.porcentajeRecargo}% (${formateadorCOP.format(t.valorRecargo)})</span>`
-                : '<span style="color: var(--text-dim);">$0</span>'}
-            </td>
-            <td><strong style="color: var(--accent-emerald); font-size: 0.95rem;">${formateadorCOP.format(t.totalPagar)}</strong></td>
-            <td>
-              <button class="btn btn-secondary btn-sm" onclick="consultarDetalle('${t.id}')">
-                Ver 200
-              </button>
-            </td>
-          </tr>
-        `;
-      }).join('');
+      // Renderizamos la tabla completa
+      renderizarTablaTurnos(AppState.turnos);
     }
   } catch (err) {
     tbody.innerHTML = `<tr><td colspan="9" class="empty-state" style="color: var(--accent-rose);">Error al conectar con GET /api/turnos: ${err.message}</td></tr>`;
   }
 }
 
-// 7. BUSCADOR POR ID (GET /api/turnos/:id)
+// Renderizador parametrizado de la tabla de turnos
+function renderizarTablaTurnos(listaTurnos, queryFiltro = '') {
+  const tbody = document.getElementById('tbodyTurnos');
+  if (!tbody) return;
+
+  if (!listaTurnos || listaTurnos.length === 0) {
+    if (queryFiltro) {
+      tbody.innerHTML = `<tr><td colspan="9" class="empty-state">No se encontraron solicitudes que coincidan con <strong>"${escapeHTML(queryFiltro)}"</strong>. <button class="btn btn-secondary btn-sm" style="margin-left: 8px;" onclick="cargarTurnos()">Ver todas</button></td></tr>`;
+    } else {
+      tbody.innerHTML = `<tr><td colspan="9" class="empty-state">No hay solicitudes registradas aún. Registra una en el formulario.</td></tr>`;
+    }
+    return;
+  }
+
+  tbody.innerHTML = listaTurnos.map(t => {
+    const fecha = new Date(t.fechaHora).toLocaleDateString('es-CO', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+
+    const idLabel = queryFiltro ? resaltarTexto(`#${t.id}`, queryFiltro) : `#${t.id}`;
+    const estudianteLabel = queryFiltro ? resaltarTexto(t.estudiante, queryFiltro) : t.estudiante;
+    const temaLabel = queryFiltro ? resaltarTexto(t.tema, queryFiltro) : t.tema;
+    const tipoLabel = queryFiltro ? resaltarTexto(t.tipoServicio, queryFiltro) : t.tipoServicio;
+
+    return `
+      <tr>
+        <td><strong>${idLabel}</strong></td>
+        <td><strong>${estudianteLabel}</strong></td>
+        <td>
+          <div>${tipoLabel}</div>
+          <small style="color: var(--text-dim);">${temaLabel}</small>
+        </td>
+        <td>${fecha}</td>
+        <td>${formateadorCOP.format(t.precioBase)}</td>
+        <td>
+          ${t.prioritario 
+            ? '<span class="badge-tag-priority">Prioritaria</span>' 
+            : '<span class="badge-tag-normal">Normal</span>'}
+        </td>
+        <td>
+          ${t.prioritario 
+            ? `<span style="color: var(--accent-amber); font-weight: 600;">+${t.porcentajeRecargo}% (${formateadorCOP.format(t.valorRecargo)})</span>`
+            : '<span style="color: var(--text-dim);">$0</span>'}
+        </td>
+        <td><strong style="color: var(--accent-emerald); font-size: 0.95rem;">${formateadorCOP.format(t.totalPagar)}</strong></td>
+        <td>
+          <button class="btn btn-secondary btn-sm" onclick="consultarDetalle('${t.id}')">
+            Ver 200
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// 8. BUSCADOR EN TABLA Y CONSULTA POR ID (GET /api/turnos/:id)
 function configurarBuscadorId() {
   const btnBuscar = document.getElementById('btnBuscarPorId');
   const inputId = document.getElementById('inputIdBusqueda');
   const btnRefrescar = document.getElementById('btnRefrescarTabla');
 
-  if (btnRefrescar) btnRefrescar.addEventListener('click', cargarTurnos);
+  if (btnRefrescar) {
+    btnRefrescar.addEventListener('click', () => {
+      if (inputId) inputId.value = '';
+      const inputGlobal = document.getElementById('globalSearchInput');
+      if (inputGlobal) inputGlobal.value = '';
+      const btnClear = document.getElementById('btnClearGlobalSearch');
+      if (btnClear) btnClear.classList.add('hidden');
+      const box = document.getElementById('boxResultadoId');
+      if (box) box.classList.add('hidden');
+      cargarTurnos();
+    });
+  }
+
+  if (inputId) {
+    // Filtrado interactivo en tiempo real al escribir en la tabla
+    inputId.addEventListener('input', (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      if (!q) {
+        renderizarTablaTurnos(AppState.turnos);
+        const box = document.getElementById('boxResultadoId');
+        if (box) box.classList.add('hidden');
+        return;
+      }
+      const filtrados = AppState.turnos.filter(t => 
+        String(t.id).includes(q) || 
+        (t.estudiante || '').toLowerCase().includes(q) || 
+        (t.tema || '').toLowerCase().includes(q) ||
+        (t.tipoServicio || '').toLowerCase().includes(q)
+      );
+      renderizarTablaTurnos(filtrados, q);
+    });
+
+    inputId.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const val = inputId.value.trim();
+        if (val) {
+          // Si es numérico, realiza la prueba HTTP contra el endpoint GET /api/turnos/:id
+          if (!isNaN(Number(val))) {
+            ejecutarConsultaId(val);
+          }
+        }
+      }
+    });
+  }
 
   if (btnBuscar && inputId) {
     btnBuscar.addEventListener('click', () => {
       const id = inputId.value.trim();
       if (id) ejecutarConsultaId(id);
-    });
-
-    inputId.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        const id = inputId.value.trim();
-        if (id) ejecutarConsultaId(id);
-      }
     });
   }
 }
@@ -346,14 +630,14 @@ async function ejecutarConsultaId(id) {
 
     if (res.status === 200) {
       box.innerHTML = `
-        <div style="color: #34D399; font-weight: 700; margin-bottom: 6px;">
+        <div style="color: #10B981; font-weight: 700; margin-bottom: 6px;">
           ✔ HTTP 200 OK — Solicitud #${id} Encontrada en el Backend
         </div>
         <pre class="json-viewer">${JSON.stringify(data, null, 2)}</pre>
       `;
     } else if (res.status === 404) {
       box.innerHTML = `
-        <div style="color: #F87171; font-weight: 700; margin-bottom: 6px;">
+        <div style="color: #EF4444; font-weight: 700; margin-bottom: 6px;">
           ✖ HTTP 404 Not Found — Identificador Inexistente
         </div>
         <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 6px;">${data.mensaje || 'Recurso no encontrado'}</p>
@@ -563,6 +847,25 @@ function renderizarForo() {
     return;
   }
 
+  renderizarGridForo(posts, '');
+}
+
+function renderizarForoFiltrado(postsFiltrados, query = '') {
+  const container = document.getElementById('foroPostsGrid');
+  if (!container) return;
+
+  if (!postsFiltrados || postsFiltrados.length === 0) {
+    container.innerHTML = `<div class="empty-state" style="padding: 40px; text-align: center; color: var(--text-dim);">No se encontraron temas en el foro para <strong>"${escapeHTML(query)}"</strong>. <button class="btn btn-secondary btn-sm" style="margin-left: 8px;" onclick="renderizarForo()">Ver todos</button></div>`;
+    return;
+  }
+
+  renderizarGridForo(postsFiltrados, query);
+}
+
+function renderizarGridForo(posts, query) {
+  const container = document.getElementById('foroPostsGrid');
+  if (!container) return;
+
   container.innerHTML = posts.map(post => {
     const fecha = new Date(post.fecha).toLocaleDateString('es-CO', {
       year: 'numeric',
@@ -570,15 +873,19 @@ function renderizarForo() {
       day: 'numeric'
     });
 
+    const tituloHtml = query ? resaltarTexto(post.titulo, query) : escapeHTML(post.titulo);
+    const autorHtml = query ? resaltarTexto(post.autor, query) : escapeHTML(post.autor);
+    const contenidoHtml = query ? resaltarTexto(post.contenido, query) : escapeHTML(post.contenido);
+
     return `
       <div class="foro-thread-card">
         <div class="thread-meta">
           <span class="thread-tag">${post.categoria}</span>
-          <span class="thread-author">${post.autor}</span>
+          <span class="thread-author">${autorHtml}</span>
           <span class="thread-date">• ${fecha}</span>
         </div>
-        <h3 class="thread-title">${post.titulo}</h3>
-        <p class="thread-excerpt">${post.contenido}</p>
+        <h3 class="thread-title">${tituloHtml}</h3>
+        <p class="thread-excerpt">${contenidoHtml}</p>
         <div class="thread-footer">
           <button class="btn-upvote" onclick="votarHilo('${post.id}')">
             ▲ Útil (${post.votos || 0})

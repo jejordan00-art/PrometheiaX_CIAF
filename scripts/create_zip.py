@@ -12,7 +12,7 @@ with zipfile.ZipFile(zip_filename, "w", zipfile.ZIP_DEFLATED) as zipf:
         # Filtrar directorios excluidos
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
         for file in files:
-            if file == zip_filename or any(file.endswith(ext) for ext in exclude_extensions):
+            if file == zip_filename or any(file.endswith(ext) for ext in exclude_extensions) or file.startswith("~$"):
                 continue
             file_path = os.path.join(root, file)
             archive_path = os.path.relpath(file_path, ".")
