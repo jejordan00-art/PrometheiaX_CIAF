@@ -509,17 +509,32 @@ body {
 .step-pill {
   font-size: 0.78rem;
   font-weight: 600;
-  padding: 6px 14px;
+  padding: 7px 16px;
   border-radius: var(--radius-pill);
   background-color: var(--bg-card);
   border: 1px solid var(--border-line);
   color: var(--text-dim);
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.step-pill:hover {
+  background-color: #F8FAFC;
+  border-color: #CBD5E1;
+  color: var(--text-primary);
+  transform: translateY(-1px);
 }
 
 .step-pill.active {
   background-color: #EFF6FF;
   border-color: #BFDBFE;
   color: var(--action-primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
 }
 
 .step-badge-demo {
@@ -629,6 +644,21 @@ body {
   color: var(--text-primary);
   text-align: center;
   box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.network-node:hover {
+  transform: translateY(-2px);
+  border-color: var(--brand-primary);
+  box-shadow: 0 6px 16px -2px rgba(37, 99, 235, 0.12);
+  color: var(--brand-primary);
+  background-color: #F8FAFC;
 }
 
 .node-center {
@@ -637,6 +667,46 @@ body {
   border-color: #BFDBFE;
   color: var(--action-primary);
   font-weight: 700;
+}
+
+.node-center:hover {
+  background: #DBEAFE;
+  border-color: #93C5FD;
+  color: var(--brand-primary);
+}
+
+.metric-card.interactive,
+.activity-item.interactive,
+.agenda-card.interactive {
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.metric-card.interactive:hover {
+  transform: translateY(-3px);
+  border-color: var(--brand-primary);
+  box-shadow: 0 12px 24px -4px rgba(37, 99, 235, 0.1);
+}
+
+.activity-item.interactive:hover {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+}
+
+.agenda-card.interactive:hover {
+  transform: translateY(-2px);
+  border-color: var(--brand-primary);
+  box-shadow: 0 12px 24px -4px rgba(37, 99, 235, 0.12);
+}
+
+.highlight-pulse {
+  animation: pulseCard 1.2s ease-in-out;
+}
+
+@keyframes pulseCard {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+  50% { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); border-color: var(--brand-primary); }
+  100% { transform: scale(1); box-shadow: var(--shadow-card); }
 }
 
 /* METRICS GRID */

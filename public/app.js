@@ -167,13 +167,66 @@ function actualizarCotizacionEnVivo() {
   }
 }
 
-window.seleccionarTemaRapido = function(tema) {
+window.seleccionarTemaRapido = function(tema, btn = null) {
   const inputTema = document.getElementById('inputTema');
   if (inputTema) inputTema.value = tema;
 
   const tagChips = document.querySelectorAll('.tag-chip');
   tagChips.forEach(c => c.classList.remove('active'));
-  event.target.classList.add('active');
+  if (btn) {
+    btn.classList.add('active');
+  } else {
+    const matching = Array.from(tagChips).find(c => c.textContent.trim().toLowerCase().includes(tema.toLowerCase().slice(0, 5)));
+    if (matching) matching.classList.add('active');
+  }
+  actualizarCotizacionEnVivo();
+};
+
+// Alternar entre los pasos del formulario (01 Detalles / 02 Confirmación)
+window.cambiarPasoFormulario = function(paso) {
+  const btnStep1 = document.getElementById('btnStep1');
+  const btnStep2 = document.getElementById('btnStep2');
+  const cardCotizacion = document.querySelector('.card-quotation');
+  const inputEstudiante = document.getElementById('inputEstudiante');
+  const btnEnviar = document.getElementById('btnEnviarTurno');
+
+  if (paso === 1) {
+    if (btnStep1) btnStep1.classList.add('active');
+    if (btnStep2) btnStep2.classList.remove('active');
+    if (inputEstudiante) {
+      inputEstudiante.focus();
+      inputEstudiante.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  } else if (paso === 2) {
+    if (btnStep2) btnStep2.classList.add('active');
+    if (btnStep1) btnStep1.classList.remove('active');
+    
+    // Sincronizamos la cotización con la regla N
+    actualizarCotizacionEnVivo();
+
+    // Hacemos scroll y animación de pulso a la tarjeta de confirmación / cotización
+    if (cardCotizacion) {
+      cardCotizacion.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      cardCotizacion.classList.remove('highlight-pulse');
+      void cardCotizacion.offsetWidth; // Reflow para reiniciar animación
+      cardCotizacion.classList.add('highlight-pulse');
+    }
+    if (btnEnviar) {
+      btnEnviar.focus();
+    }
+  }
+};
+
+// Navegar a la asesoría recomendada desde la tarjeta del Overview
+window.verProximaAsesoria = function() {
+  irATab('tab-solicitudes', true);
+  const inputId = document.getElementById('inputIdBusqueda');
+  if (inputId) inputId.value = 'Arquitectura';
+  const filtrados = AppState.turnos.filter(t => 
+    (t.tema || '').toLowerCase().includes('arquitectura') || 
+    (t.tipoServicio || '').toLowerCase().includes('arquitectura')
+  );
+  renderizarTablaTurnos(filtrados.length ? filtrados : AppState.turnos, 'Arquitectura');
 };
 
 // 5. REGISTRO DE TURNO (POST /api/turnos)

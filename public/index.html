@@ -114,17 +114,17 @@
             </div>
 
             <div class="hero-network-badge">
-              <div class="network-node node-1">🎓 Estudiante</div>
-              <div class="network-node node-center">⚡ Conecta</div>
-              <div class="network-node node-2">💬 Comunidad</div>
-              <div class="network-node node-3">📅 Asesoría</div>
-              <div class="network-node node-4">✔ Soluciones</div>
+              <button type="button" class="network-node node-1" onclick="irATab('tab-overview')" title="Panel del Estudiante">🎓 Estudiante</button>
+              <button type="button" class="network-node node-center" onclick="irATab('tab-form')" title="Conectar asesoría académica">⚡ Conecta</button>
+              <button type="button" class="network-node node-2" onclick="irATab('tab-foro')" title="Explorar Foro de la Comunidad">💬 Comunidad</button>
+              <button type="button" class="network-node node-3" onclick="irATab('tab-form')" title="Solicitar nueva Asesoría">📅 Asesoría</button>
+              <button type="button" class="network-node node-4" onclick="irATab('tab-solicitudes')" title="Ver Soluciones y Turnos">✔ Soluciones</button>
             </div>
           </div>
 
           <!-- ACADEMIC METRICS (4 CARDS) -->
           <div class="metrics-grid">
-            <div class="metric-card">
+            <div class="metric-card interactive" onclick="irATab('tab-solicitudes')" title="Ver solicitudes en almacenamiento">
               <div class="metric-top">
                 <span>Solicitudes registradas</span>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
@@ -135,18 +135,18 @@
               </div>
             </div>
 
-            <div class="metric-card">
+            <div class="metric-card interactive" onclick="irATab('tab-consola')" title="Ver cálculo de la Regla N (10 × 2% = 20%)">
               <div class="metric-top">
                 <span>Recargo prioritario</span>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
               </div>
               <div class="metric-bottom">
-                <span class="metric-num" id="metricRecargoVal">14%</span>
+                <span class="metric-num" id="metricRecargoVal">20%</span>
                 <span class="metric-tag">N × 2%</span>
               </div>
             </div>
 
-            <div class="metric-card">
+            <div class="metric-card interactive" onclick="irATab('tab-foro')" title="Ver preguntas y debates del foro">
               <div class="metric-top">
                 <span>Preguntas publicadas</span>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -157,13 +157,13 @@
               </div>
             </div>
 
-            <div class="metric-card">
+            <div class="metric-card interactive" onclick="irATab('tab-consola')" title="Ver la suite de 25 pruebas técnicas">
               <div class="metric-top">
                 <span>Pruebas Técnicas</span>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
               </div>
               <div class="metric-bottom">
-                <span class="metric-num text-emerald">9 / 9</span>
+                <span class="metric-num text-emerald">25 / 25</span>
                 <span class="metric-tag">100% Ok</span>
               </div>
             </div>
@@ -177,15 +177,15 @@
                 <a href="javascript:void(0)" onclick="irATab('tab-solicitudes')" class="link-cyan">Ver solicitudes →</a>
               </div>
               <div class="activity-list" id="activityList">
-                <div class="activity-item">
+                <div class="activity-item interactive" onclick="irATab('tab-solicitudes')" title="Ver en Mis Solicitudes">
                   <div class="activity-icon-badge check">✔</div>
                   <div class="activity-content">
                     <strong>Solicitud de Asesoría registrada</strong>
-                    <span>Arquitectura de Software · Prioritaria (+14%)</span>
+                    <span>Arquitectura de Software · Prioritaria (+20%)</span>
                   </div>
                   <span class="activity-time">Reciente</span>
                 </div>
-                <div class="activity-item">
+                <div class="activity-item interactive" onclick="irATab('tab-foro')" title="Ver en el Foro Académico">
                   <div class="activity-icon-badge forum">💬</div>
                   <div class="activity-content">
                     <strong>Nuevo debate en la comunidad</strong>
@@ -196,7 +196,7 @@
               </div>
             </div>
 
-            <div class="agenda-card">
+            <div class="agenda-card interactive" onclick="verProximaAsesoria()" title="Clic para ver esta asesoría en Mis Solicitudes">
               <span class="meta-label-cyan">PRÓXIMA ASESORÍA RECOMENDADA</span>
               <h3>Arquitectura de una API REST</h3>
               <div class="schedule-pill">
@@ -204,8 +204,8 @@
                 <span>24 nov. 2026 · 3:00 p. m.</span>
               </div>
               <div class="agenda-actions">
-                <span class="status-badge-pending">Confirmada</span>
-                <button class="btn btn-secondary btn-sm" onclick="irATab('tab-solicitudes')">Ver turnos</button>
+                <button type="button" class="status-badge-pending" onclick="event.stopPropagation(); verProximaAsesoria();" title="Asesoría confirmada">Confirmada</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); verProximaAsesoria();">Ver turnos</button>
               </div>
             </div>
           </div>
@@ -218,8 +218,8 @@
           <p class="display-sub">Cuéntanos qué necesitas. Conecta con el asesor ideal, calcula la tarifa con la regla N y regístrala en la API REST.</p>
 
           <div class="progress-bar-row">
-            <span class="step-pill active">01 Detalles de la asesoría</span>
-            <span class="step-pill">02 Confirmación</span>
+            <button type="button" class="step-pill active" id="btnStep1" onclick="cambiarPasoFormulario(1)">01 Detalles de la asesoría</button>
+            <button type="button" class="step-pill" id="btnStep2" onclick="cambiarPasoFormulario(2)">02 Confirmación</button>
             <span class="step-badge-demo">Registro en vivo · Conexión a Express</span>
           </div>
 
