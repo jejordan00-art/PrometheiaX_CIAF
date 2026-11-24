@@ -88,19 +88,24 @@ async function cargarConfiguracionBackend() {
   }
 }
 
-// 3. FECHA POR DEFECTO (MAÑANA A LAS 10:00 AM)
+// 3. FECHA POR DEFECTO (FIJA, ASIGNADA POR EL SISTEMA Y NO MODIFICABLE)
 function establecerFechaPorDefecto() {
   const inputFecha = document.getElementById('inputFechaHora');
   if (inputFecha) {
     const manana = new Date();
     manana.setDate(manana.getDate() + 1);
-    manana.setHours(10, 0, 0, 0);
+    manana.setHours(15, 0, 0, 0); // 3:00 PM (horario estándar de asesorías)
     const yyyy = manana.getFullYear();
     const mm = String(manana.getMonth() + 1).padStart(2, '0');
     const dd = String(manana.getDate()).padStart(2, '0');
     const hh = String(manana.getHours()).padStart(2, '0');
     const min = String(manana.getMinutes()).padStart(2, '0');
     inputFecha.value = `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+    inputFecha.readOnly = true;
+    inputFecha.setAttribute('readonly', 'readonly');
+    // Impedir que se abra el selector o se modifique por teclado
+    inputFecha.addEventListener('keydown', (e) => e.preventDefault());
+    inputFecha.addEventListener('mousedown', (e) => e.preventDefault());
   }
 }
 

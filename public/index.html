@@ -114,11 +114,10 @@
             </div>
 
             <div class="hero-network-badge">
-              <button type="button" class="network-node node-1" onclick="irATab('tab-overview')" title="Panel del Estudiante">🎓 Estudiante</button>
-              <button type="button" class="network-node node-center" onclick="irATab('tab-form')" title="Conectar asesoría académica">⚡ Conecta</button>
+              <button type="button" class="network-node node-center" onclick="irATab('tab-form')" title="Conectar asesoría académica">⚡ Conecta tu Asesoría</button>
               <button type="button" class="network-node node-2" onclick="irATab('tab-foro')" title="Explorar Foro de la Comunidad">💬 Comunidad</button>
-              <button type="button" class="network-node node-3" onclick="irATab('tab-form')" title="Solicitar nueva Asesoría">📅 Asesoría</button>
-              <button type="button" class="network-node node-4" onclick="irATab('tab-solicitudes')" title="Ver Soluciones y Turnos">✔ Soluciones</button>
+              <button type="button" class="network-node node-3" onclick="irATab('tab-form')" title="Solicitar nueva Asesoría">📅 Nueva Asesoría</button>
+              <button type="button" class="network-node node-full" onclick="irATab('tab-solicitudes')" title="Ver Soluciones y Turnos">✔ Ver Solicitudes</button>
             </div>
           </div>
 
@@ -269,8 +268,9 @@
 
                 <div class="fields-row">
                   <div class="field-box">
-                    <label for="inputFechaHora">Fecha y hora solicitadas <span class="req">*</span></label>
-                    <input type="datetime-local" id="inputFechaHora" required>
+                    <label for="inputFechaHora">Fecha y hora de la asesoría <span class="req">*</span></label>
+                    <input type="datetime-local" id="inputFechaHora" readonly style="background-color: #F8FAFC; cursor: not-allowed; border-color: #CBD5E1; color: var(--text-primary); font-weight: 500;" required>
+                    <span class="field-hint">🔒 Fecha fijada por el sistema académico (No modificable)</span>
                   </div>
                   <div class="field-box">
                     <label for="inputPrecioBase">Precio base · COP <span class="req">*</span></label>
