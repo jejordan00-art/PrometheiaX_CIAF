@@ -195,16 +195,24 @@
               </div>
             </div>
 
-            <div class="agenda-card interactive" onclick="verProximaAsesoria()" title="Clic para ver esta asesoría en Mis Solicitudes">
+            <div class="agenda-card">
               <span class="meta-label-cyan">PRÓXIMA ASESORÍA RECOMENDADA</span>
               <h3>Arquitectura de una API REST</h3>
-              <div class="schedule-pill">
+              
+              <!-- PÍLDORA DE FECHA MODIFICABLE -->
+              <div class="schedule-pill editable-schedule" id="agendaSchedulePill" title="Clic para modificar la fecha y hora de la asesoría">
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <span>24 nov. 2026 · 3:00 p. m.</span>
+                <span id="agendaFechaDisplay">24 nov. 2026 · 3:00 p. m.</span>
+                <input type="datetime-local" id="inputModificarFechaAgenda" class="hidden-date-input" value="2026-11-24T15:00">
+                <button type="button" class="btn-edit-date" title="Modificar fecha">
+                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                  Modificar
+                </button>
               </div>
+
               <div class="agenda-actions">
-                <button type="button" class="status-badge-pending" onclick="event.stopPropagation(); verProximaAsesoria();" title="Asesoría confirmada">Confirmada</button>
-                <button type="button" class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); verProximaAsesoria();">Ver turnos</button>
+                <span class="status-badge-pending" title="Asesoría confirmada">Confirmada</span>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="verProximaAsesoria()">Ver turnos</button>
               </div>
             </div>
           </div>
@@ -260,17 +268,17 @@
 
                 <!-- CATEGORÍAS ACADÉMICAS RÁPIDAS -->
                 <div class="category-tags-row">
-                  <button type="button" class="tag-chip" onclick="seleccionarTemaRapido('Desarrollo web y APIs')">Desarrollo web</button>
-                  <button type="button" class="tag-chip active" onclick="seleccionarTemaRapido('Arquitectura por capas')">Arquitectura</button>
-                  <button type="button" class="tag-chip" onclick="seleccionarTemaRapido('Bases de datos relacionales')">Bases de datos</button>
-                  <button type="button" class="tag-chip" onclick="seleccionarTemaRapido('Lógica y algoritmos')">Programación</button>
+                  <button type="button" class="tag-chip" onclick="seleccionarTemaRapido('Desarrollo web y APIs', this)">Desarrollo web</button>
+                  <button type="button" class="tag-chip active" onclick="seleccionarTemaRapido('Arquitectura por capas', this)">Arquitectura</button>
+                  <button type="button" class="tag-chip" onclick="seleccionarTemaRapido('Bases de datos relacionales', this)">Bases de datos</button>
+                  <button type="button" class="tag-chip" onclick="seleccionarTemaRapido('Lógica y algoritmos', this)">Programación</button>
                 </div>
 
                 <div class="fields-row">
                   <div class="field-box">
                     <label for="inputFechaHora">Fecha y hora de la asesoría <span class="req">*</span></label>
-                    <input type="datetime-local" id="inputFechaHora" readonly style="background-color: #F8FAFC; cursor: not-allowed; border-color: #CBD5E1; color: var(--text-primary); font-weight: 500;" required>
-                    <span class="field-hint">🔒 Fecha fijada por el sistema académico (No modificable)</span>
+                    <input type="datetime-local" id="inputFechaHora" required>
+                    <span class="field-hint">Selecciona o modifica el día y la hora de tu asesoría</span>
                   </div>
                   <div class="field-box">
                     <label for="inputPrecioBase">Precio base · COP <span class="req">*</span></label>

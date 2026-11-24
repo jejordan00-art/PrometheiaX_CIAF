@@ -876,6 +876,52 @@ body {
   margin-bottom: var(--space-4);
 }
 
+.schedule-pill.editable-schedule {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.schedule-pill.editable-schedule:hover {
+  background-color: #EFF6FF;
+  border-color: #93C5FD;
+  color: var(--brand-primary);
+}
+
+.hidden-date-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.btn-edit-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--brand-primary);
+  margin-left: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.schedule-pill.editable-schedule:hover .btn-edit-date {
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: #FFFFFF;
+}
+
 .agenda-actions {
   display: flex;
   align-items: center;

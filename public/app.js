@@ -20,6 +20,7 @@ const formateadorCOP = new Intl.NumberFormat('es-CO', {
 document.addEventListener('DOMContentLoaded', () => {
   inicializarNavegacionSidebar();
   configurarBuscadorGlobal();
+  configurarModificadorFechaAgenda();
   cargarConfiguracionBackend();
   configurarCalculadoraCotizacion();
   configurarFormularioRegistro();
@@ -88,24 +89,66 @@ async function cargarConfiguracionBackend() {
   }
 }
 
-// 3. FECHA POR DEFECTO (FIJA, ASIGNADA POR EL SISTEMA Y NO MODIFICABLE)
+// 3. MODIFICADOR DE FECHA EN PRÓXIMA ASESORÍA RECOMENDADA
+function configurarModificadorFechaAgenda() {
+  const pill = document.getElementById('agendaSchedulePill');
+  const inputFecha = document.getElementById('inputModificarFechaAgenda');
+  const display = document.getElementById('agendaFechaDisplay');
+
+  if (!pill || !inputFecha || !display) return;
+
+  // Abrir el selector de fecha al hacer clic en la píldora o botón
+  pill.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (inputFecha.showPicker) {
+      try { inputFecha.showPicker(); } catch (err) { inputFecha.focus(); }
+    } else {
+      inputFecha.focus();
+    }
+  });
+
+  // Al seleccionar una nueva fecha y hora
+  inputFecha.addEventListener('change', () => {
+    const valor = inputFecha.value;
+    if (!valor) return;
+
+    const fechaObj = new Date(valor);
+    if (isNaN(fechaObj.getTime())) return;
+
+    const opciones = {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    };
+    
+    // Formatear al estilo legible en español: "24 nov. 2026 · 3:00 p. m."
+    const fechaTexto = fechaObj.toLocaleDateString('es-CO', opciones);
+    display.innerText = fechaTexto.replace(',', ' ·');
+
+    // Sincronizar también con el formulario de nueva asesoría
+    const inputFormFecha = document.getElementById('inputFechaHora');
+    if (inputFormFecha) {
+      inputFormFecha.value = valor;
+    }
+  });
+}
+
+// 4. FECHA POR DEFECTO DEL FORMULARIO (TOTALMENTE MODIFICABLE)
 function establecerFechaPorDefecto() {
   const inputFecha = document.getElementById('inputFechaHora');
   if (inputFecha) {
     const manana = new Date();
     manana.setDate(manana.getDate() + 1);
-    manana.setHours(15, 0, 0, 0); // 3:00 PM (horario estándar de asesorías)
+    manana.setHours(15, 0, 0, 0); // 3:00 PM por defecto
     const yyyy = manana.getFullYear();
     const mm = String(manana.getMonth() + 1).padStart(2, '0');
     const dd = String(manana.getDate()).padStart(2, '0');
     const hh = String(manana.getHours()).padStart(2, '0');
     const min = String(manana.getMinutes()).padStart(2, '0');
     inputFecha.value = `${yyyy}-${mm}-${dd}T${hh}:${min}`;
-    inputFecha.readOnly = true;
-    inputFecha.setAttribute('readonly', 'readonly');
-    // Impedir que se abra el selector o se modifique por teclado
-    inputFecha.addEventListener('keydown', (e) => e.preventDefault());
-    inputFecha.addEventListener('mousedown', (e) => e.preventDefault());
   }
 }
 
