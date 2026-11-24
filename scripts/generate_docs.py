@@ -136,7 +136,8 @@ def generar_manual_instalacion():
     r_inst.font.color.rgb = RGBColor(0x1E, 0x3A, 0x8A)
     
     r_fac = p_head.add_run("FACULTAD DE INGENIERÍA — PROFESIONAL EN INGENIERÍA DE SOFTWARE\n"
-                           "ASIGNATURA: ARQUITECTURA CLIENTE-SERVIDOR (GRUPO 1 MARTES)\n\n")
+                           "ASIGNATURA: ARQUITECTURA CLIENTE-SERVIDOR (GRUPO 1 MARTES)\n"
+                           "DOCENTE: ING. GERMÁN ARGÜELLES\n\n")
     r_fac.font.size = Pt(10.5)
     r_fac.font.color.rgb = RGBColor(0x64, 0x74, 0x8B)
     
@@ -318,8 +319,13 @@ def generar_manual_instalacion():
                       "  Solución: Asegúrate de que .env tenga 'EQUIPO_N=10' y reinicia el servidor con 'npm start'.", style='List Bullet')
 
     ruta_doc = os.path.join(BASE_DIR, "PrometheiaX — Manual de Instalación y Despliegue.docx")
-    doc.save(ruta_doc)
-    print(f"✔ Manual de Instalación guardado con éxito: {ruta_doc}")
+    try:
+        doc.save(ruta_doc)
+        print(f"✔ Manual de Instalación guardado con éxito: {ruta_doc}")
+    except PermissionError:
+        ruta_alt = os.path.join(BASE_DIR, "PrometheiaX — Manual de Instalación y Despliegue (Actualizado).docx")
+        doc.save(ruta_alt)
+        print(f"⚠️ Aviso: Word tiene abierto el archivo. Se guardó copia actualizada en: {ruta_alt}")
 
 # ==============================================================================
 # 2. GUÍA DE SUSTENTACIÓN EXHAUSTIVA
@@ -342,7 +348,9 @@ def generar_guia_sustentacion():
     r_inst.font.size = Pt(13)
     r_inst.font.color.rgb = RGBColor(0x1E, 0x3A, 0x8A)
     
-    r_fac = p_head.add_run("PROGRAMA DE INGENIERÍA DE SOFTWARE\nASIGNATURA: ARQUITECTURA CLIENTE-SERVIDOR\nGRUPO 1 MARTES\n\n")
+    r_fac = p_head.add_run("PROGRAMA DE INGENIERÍA DE SOFTWARE\n"
+                           "ASIGNATURA: ARQUITECTURA CLIENTE-SERVIDOR (GRUPO 1 MARTES)\n"
+                           "DOCENTE: ING. GERMÁN ARGÜELLES\n\n")
     r_fac.font.size = Pt(10.5)
     r_fac.font.color.rgb = RGBColor(0x64, 0x74, 0x8B)
 
@@ -568,8 +576,13 @@ def generar_guia_sustentacion():
     doc.add_paragraph("✔ 5. VS Code abierto en la raíz del proyecto para proyectar el código ordenado de index.js, routes/, controllers/ y services/.", style='List Bullet')
 
     ruta_doc = os.path.join(BASE_DIR, "PrometheiaX — Guía de Sustentación.docx")
-    doc.save(ruta_doc)
-    print(f"✔ Guía de Sustentación guardada con éxito: {ruta_doc}")
+    try:
+        doc.save(ruta_doc)
+        print(f"✔ Guía de Sustentación guardada con éxito: {ruta_doc}")
+    except PermissionError:
+        ruta_alt = os.path.join(BASE_DIR, "PrometheiaX — Guía de Sustentación (Actualizado).docx")
+        doc.save(ruta_alt)
+        print(f"⚠️ Aviso: Word tiene abierto el archivo. Se guardó copia actualizada en: {ruta_alt}")
 
 if __name__ == '__main__':
     generar_manual_instalacion()

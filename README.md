@@ -3,7 +3,8 @@
 > **Taller Evaluativo Final — Arquitectura Cliente-Servidor**  
 > **Institución:** Corporación Instituto de Administración y Finanzas (CIAF)  
 > **Programa:** Profesional en Ingeniería de Software  
-> **Docente:** Arquitectura de Software  
+> **Asignatura:** Arquitectura de Software (Grupo 1 Martes)  
+> **Docente:** Ing. Germán Argüelles  
 
 ---
 
