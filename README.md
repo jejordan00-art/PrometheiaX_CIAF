@@ -272,19 +272,19 @@ $\text{Total a Pagar} = 200.000 + 40.000 = 240.000$ COP.
 {
   "exito": true,
   "datos": {
-    "id": "1",
-    "estudiante": "Ana Gómez",
-    "tipoServicio": "Asesoría académica",
-    "tema": "Arquitectura de software",
-    "fechaHora": "2026-12-05T10:00:00",
+    "id": 1,
+    "estudiante": "Laura Ximena Sánchez",
+    "tipoServicio": "Tutoría de código",
+    "tema": "Arquitectura de software por capas",
+    "fechaHora": "2026-11-24T15:00:00.000Z",
     "precioBase": 200000,
     "prioritario": true,
-    "parametroN": 7,
-    "porcentajeRecargo": 14,
-    "valorRecargo": 28000,
-    "totalPagar": 228000,
+    "parametroN": 10,
+    "porcentajeRecargo": 20,
+    "valorRecargo": 40000,
+    "totalPagar": 240000,
     "estado": "Confirmada",
-    "creadoEn": "2026-11-21T10:00:00.000Z"
+    "creadoEn": "2026-11-22T06:00:00.000Z"
   }
 }
 ```
@@ -314,29 +314,33 @@ $\text{Total a Pagar} = 200.000 + 40.000 = 240.000$ COP.
 
 ### Paso 1: Clonar o descargar el repositorio
 ```bash
-git clone <URL_DEL_REPOSITORIO_GITHUB>
-cd universidad
+git clone https://github.com/xjordan1x/prometheiax-api-ciaf.git
+cd prometheiax-api-ciaf
 ```
 
 ### Paso 2: Instalar dependencias
 ```bash
 npm install
+# O en Windows PowerShell si hay bloqueo de scripts:
+npm.cmd install
 ```
 
-### Paso 3: Configurar variables de entorno
+### Paso 3: Configurar variables de entorno (.env)
 Copia la plantilla `.env.example` en un nuevo archivo `.env`:
 ```bash
 cp .env.example .env
 ```
-Ajusta la variable `EQUIPO_N` con el número oficial de lista del primer integrante del equipo:
+Asegúrate de configurar los parámetros oficiales del equipo:
 ```env
 PORT=3000
-EQUIPO_N=7
+EQUIPO_N=10
 ```
 
 ### Paso 4: Iniciar el servidor
 ```bash
 npm start
+# O en modo desarrollo con recarga automática:
+npm run dev
 ```
 
 El servidor quedará en ejecución en:
@@ -345,51 +349,103 @@ El servidor quedará en ejecución en:
 
 ---
 
-## 7. Pruebas Automatizadas
+## 7. Suite Completa de Pruebas Técnicas Automatizadas (25/25 — 100% OK)
 
-El proyecto incluye una suite completa de pruebas unitarias y de integración que verifican los 9 criterios de la rúbrica sin requerir librerías pesadas.
+El proyecto cuenta con una suite completa de pruebas técnicas que evalúan unitarias, integración HTTP, seguridad defensiva y carga/concurrencia:
 
-Para ejecutar los tests automatizados:
 ```bash
+# Ejecutar todas las pruebas con reporte unificado:
 npm test
+
+# O ejecutar por categorías individuales:
+npm run test:unit         # 6 Pruebas unitarias de servicios y regla N
+npm run test:integration  # 10 Pruebas de integración HTTP (200, 201, 400, 404)
+npm run test:security     # 6 Pruebas de seguridad defensiva y casos de borde
+npm run test:load         # 3 Pruebas de carga, concurrencia y latencia < 100ms
 ```
 
-### Salida Real de las Pruebas:
+### Salida Real de la Suite de Pruebas:
 ```text
-=============================================================
-   PROMETHEIAX — EJECUCIÓN DE PRUEBAS TÉCNICAS (CIAF)        
-=============================================================
+╔══════════════════════════════════════════════════════════════════╗
+║       PROMETHEIAX — REPORTE GLOBAL DE PRUEBAS TÉCNICAS (CIAF)    ║
+║   Integrantes: John Edison Jordan (#10) y Laura Sánchez (#19)   ║
+║   Parámetro N = 10 · Recargo Prioritario = 20%                   ║
+╚══════════════════════════════════════════════════════════════════╝
 
-  ✔ [PRUEBA 1] GET /api/turnos debe responder con HTTP 200 y un arreglo de turnos
-  ✔ [PRUEBA 2] GET /api/turnos/:id con ID existente debe responder con HTTP 200
-  ✔ [PRUEBA 3] GET /api/turnos/:id con ID inexistente debe responder con HTTP 404 Not Found
-  ✔ [PRUEBA 4] POST /api/turnos con prioritario=true debe responder HTTP 201 y aplicar recargo de N
-  ✔ [PRUEBA 5] POST /api/turnos con prioritario=false debe responder HTTP 201 sin recargo
-  ✔ [PRUEBA 6] POST /api/turnos con campos vacíos debe responder con HTTP 400 Bad Request
-  ✔ [PRUEBA 7] POST /api/turnos con precioBase <= 0 debe responder con HTTP 400 Bad Request
-  ✔ [PRUEBA 8] Verificar persistencia en data/turnos.json
-  ✔ [PRUEBA 9] Verificar cálculo directo en services/turnos.service.js
+--- 🔬 PRUEBAS UNITARIAS (services/turnos.service.js) ---
+  ✔ [UNIT-1] obtenerParametroN() debe devolver 10 (por John Edison Jordan #10)
+  ✔ [UNIT-2] obtenerConfiguracionNegocio() debe retornar N=10 y porcentajeRecargo=20
+  ✔ [UNIT-3] calcularTarifa(200000, true) debe aplicar recargo del 20% (Total: 240.000 COP)
+  ✔ [UNIT-4] calcularTarifa(150000, false) no debe aplicar recargo (Total: 150.000 COP)
+  ✔ [UNIT-5] calcularTarifa(80000, undefined) debe asumir prioridad false por defecto
+  ✔ [UNIT-6] calcularTarifa(123455, true) debe redondear el recargo a enteros
+  Subtotal Unitarias: 6/6 exitosas
 
--------------------------------------------------------------
- RESULTADO FINAL: 9/9 PRUEBAS EXITOSAS (100%)
--------------------------------------------------------------
+--- 🌐 PRUEBAS DE INTEGRACIÓN (ENDPOINTS & PROTOCOLOS HTTP) ---
+  ✔ [INTEG-1] GET /api responde HTTP 200 OK con metadatos del servicio
+  ✔ [INTEG-2] GET /api/turnos responde HTTP 200 OK con arreglo de solicitudes
+  ✔ [INTEG-3] GET /api/turnos/1 responde HTTP 200 OK con el turno #1
+  ✔ [INTEG-4] GET /api/turnos/999999 responde HTTP 404 Not Found con mensaje descriptivo
+  ✔ [INTEG-5] POST /api/turnos con prioridad calcula 20% y devuelve HTTP 201 Created
+  ✔ [INTEG-6] POST /api/turnos sin prioridad no aplica recargo y devuelve HTTP 201 Created
+  ✔ [INTEG-7] POST /api/turnos con estudiante vacío rechaza con HTTP 400 Bad Request
+  ✔ [INTEG-8] POST /api/turnos con precioBase <= 0 rechaza con HTTP 400 Bad Request
+  ✔ [INTEG-9] GET a ruta inexistente /api/ruta-desconocida responde HTTP 404
+  ✔ [INTEG-10] GET /api/foro responde HTTP 200 OK con hilos del foro académico
+  Subtotal Integración: 10/10 exitosas
+
+--- 🛡️ PRUEBAS DE SEGURIDAD Y CASOS DE BORDE (DEFENSIVE CODING) ---
+  ✔ [SEC-1] POST /api/turnos con cuerpo {} vacío devuelve HTTP 400 Bad Request
+  ✔ [SEC-2] POST /api/turnos con precioBase="gratis" devuelve HTTP 400 Bad Request
+  ✔ [SEC-3] POST /api/turnos con precioBase=0 exacto devuelve HTTP 400 Bad Request
+  ✔ [SEC-4] POST /api/turnos con fechaHora="manana-a-las-3" devuelve HTTP 400 Bad Request
+  ✔ [SEC-5] POST /api/turnos sanitiza espacios y persiste texto sin romper el JSON
+  ✔ [SEC-6] POST /api/turnos con estudiante=["Juan", "Pedro"] devuelve HTTP 400
+  Subtotal Seguridad y Casos de Borde: 6/6 exitosas
+
+--- ⚡ PRUEBAS DE CARGA Y CONCURRENCIA (STRESS & CONCURRENCY) ---
+    📊 Métricas: 30 peticiones en 59ms (Promedio: 54ms/req)
+  ✔ [LOAD-1] Ráfaga de 30 consultas GET /api/turnos en paralelo
+    📊 Integridad: 15 solicitudes registradas concurrentemente con 15 IDs únicos.
+  ✔ [LOAD-2] Ráfaga de 15 registros POST /api/turnos simultáneos (verificar IDs únicos)
+    📊 Latencia individual: 2 ms
+  ✔ [LOAD-3] Latencia de respuesta individual en GET /api/turnos < 100ms
+  Subtotal Carga y Concurrencia: 3/3 exitosas
+
+══════════════════════════════════════════════════════════════════
+                  RESUMEN EJECUTIVO DE EVALUACIÓN                 
+══════════════════════════════════════════════════════════════════
+  1. Pruebas Unitarias (Services & Regla N):      6/6 OK
+  2. Pruebas de Integración (Endpoints & HTTP):    10/10 OK
+  3. Pruebas de Seguridad y Casos de Borde:       6/6 OK
+  4. Pruebas de Carga y Concurrencia:             3/3 OK
+──────────────────────────────────────────────────────────────────
+  TOTAL GENERAL: 25/25 PRUEBAS EXITOSAS (100%)
+  TIEMPO DE EJECUCIÓN TOTAL: 177 ms
+══════════════════════════════════════════════════════════════════
 ```
 
 ---
 
-## 8. Instrucciones de Entrega y Publicación en GitHub
+## 8. Colección de Postman v2.1
 
-1. Inicializar Git y verificar exclusión de `node_modules`:
+En la carpeta `test/prometheiax.postman_collection.json` se incluye la colección oficial con 8 peticiones y aserciones `pm.test` automáticas para importar directamente en Postman.
+
+---
+
+## 9. Instrucciones de Entrega y Publicación en GitHub
+
+1. Verificar estado del repositorio Git:
    ```bash
-   git init
-   git add .
-   git commit -m "feat: Implementacion PrometheiaX API REST por capas para Taller CIAF"
+   git status
    ```
 2. Crear un repositorio público en GitHub (ej: `prometheiax-api-ciaf`).
-3. Vincular y subir:
+3. Vincular y subir a la cuenta `xjordan1x`:
    ```bash
-   git branch -M main
-   git remote add origin https://github.com/TU_USUARIO/prometheiax-api-ciaf.git
+   git remote add origin https://github.com/xjordan1x/prometheiax-api-ciaf.git
    git push -u origin main
    ```
-4. Adjuntar el enlace público de GitHub en la plataforma virtual de CIAF junto con los dos documentos Word de sustentación e instalación.
+4. Adjuntar en la plataforma virtual de CIAF:
+   - El enlace al repositorio de GitHub.
+   - El archivo comprimido `PrometheiaX_CIAF_Entrega.zip`.
+   - Los dos documentos Word generados: `PrometheiaX — Guía de Sustentación.docx` y `PrometheiaX — Manual de Instalación y Despliegue.docx`.
