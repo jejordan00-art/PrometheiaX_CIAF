@@ -315,8 +315,8 @@ $\text{Total a Pagar} = 200.000 + 40.000 = 240.000$ COP.
 
 ### Paso 1: Clonar o descargar el repositorio
 ```bash
-git clone https://github.com/xjordan1x/prometheiax-api-ciaf.git
-cd prometheiax-api-ciaf
+git clone https://github.com/jejordan00-art/PrometheiaX_CIAF.git
+cd PrometheiaX_CIAF
 ```
 
 ### Paso 2: Instalar dependencias
@@ -443,7 +443,7 @@ En la carpeta `test/prometheiax.postman_collection.json` se incluye la colecció
 2. Crear un repositorio público en GitHub (ej: `prometheiax-api-ciaf`).
 3. Vincular y subir a la cuenta `xjordan1x`:
    ```bash
-   git remote add origin https://github.com/xjordan1x/prometheiax-api-ciaf.git
+   git remote add origin https://github.com/jejordan00-art/PrometheiaX_CIAF.git
    git push -u origin main
    ```
 4. Adjuntar en la plataforma virtual de CIAF:
